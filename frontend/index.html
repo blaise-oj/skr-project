@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gordon Security Company</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <section class="header">
+        <!-- Top contact bar -->
+        <section class="top-contact-bar">
+            <div class="contact-item">
+                <i class="fa fa-phone"></i> Office Line: +254 715 293 884
+            </div>
+            <div class="contact-item">
+                <i class="fa fa-envelope"></i> Email Us: info@gordonsecurity.com
+            </div>
+            <div class="contact-item">
+                <i class="fa fa-map-marker"></i> Address: Nairobi, Kenya
+            </div>
+        </section>
+
+        <!-- Navigation-->
+        <nav>
+            <a href="index.html" class="logo-container">
+                <img src="images/logo.png" alt="Gordon Security Logo" class="logo">
+                <span class="logo-text">Gordon Security<br>Company</span>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <i class="fa fa-times" id="menuClose" onClick="hiddenMenu()"></i>
+                <ul>
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="about.html">ABOUT US</a></li>
+                    <li><a href="service.html">SERVICES</a></li>
+                    <li><a href="blog.html">BLOG</a></li>
+                    <li><a href="contact.html">CONTACT</a></li>
+                    <li><a href="login.html">LOGIN</a></li>
+
+                </ul>
+            </div>
+            <i class="fa fa-bars " id="menuOpen" onClick="showMenu()"></i>
+        </nav>
+
+        <!--content container (important for spacing) -->
+        <div class="content-container">
+            <!-- This div creates space between nav and slider -->
+        </div>
+
+        <!--slider container ( below nav) -->
+        <div class="slider-container" id="slider">
+            <div class="slide fade">
+                <img src="images/i40.jpg" alt="1" />
+                <div class="slide-caption caption-1">Welcome to Gordon Security — Your Safety Is Our Priority</div>
+            </div>
+            <div class="slide fade">
+                <img src="images/i41.jpg" alt="2" />
+                <div class="slide-caption caption-2">Nationwide Trusted Storage & Secure Asset Management</div>
+            </div>
+            <div class="slide fade">
+                <img src="images/i42.jpg" alt="3" />
+                <div class="slide-caption caption-3">24/7 Monitoring and Access Control Solutions</div>
+            </div>
+            <div class="slide fade">
+                <img src="images/i43.jpg" alt="4" />
+                <div class="slide-caption caption-4">Gordon Security: Innovation, Ethics & Trust</div>
+            </div>
+
+            <!-- Arrows -->
+            <a class="prev" onclick="changeSlide(-1)"><i class="fa fa-chevron-left"></i></a>
+            <a class="next" onclick="changeSlide(1)"><i class="fa fa-chevron-right"></i></a>
+
+
+            <!-- Dots -->
+            <div class="dots-container">
+                <span class="dot" onclick="goToSlide(0)"></span>
+                <span class="dot" onclick="goToSlide(1)"></span>
+                <span class="dot" onclick="goToSlide(2)"></span>
+                <span class="dot" onclick="goToSlide(3)"></span>
+            </div>
+        </div>        
+        </div>
+    </section>
+    <!-- Slider functionality -->
+    <script>
+        let currentSlide = 0;
+        let slides = document.querySelectorAll(".slide");
+        let dots = document.querySelectorAll(".dot");
+        let autoSlideInterval;
+        const slideInterval = 10000; // 10 seconds
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove("active");
+                dots[i].classList.remove("active");
+            });
+            slides[index].classList.add("active");
+            dots[index].classList.add("active");
+        }
+
+        function changeSlide(direction) {
+            currentSlide = (currentSlide + direction + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            showSlide(currentSlide);
+        }
+
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(() => {
+                changeSlide(1);
+            }, slideInterval);
+        }
+
+        function stopAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+
+        // Init
+        showSlide(currentSlide);
+        startAutoSlide();
+    </script>
+
+
+
+
+    <!------connecting frontend to backend using fetch API------->
+
+    <section class="receipt-section">
+        <div class="receipt-container">
+            <h2>Create Storage Receipt</h2>
+                <form id="receiptForm">
+                    <input type="text" id="name" placeholder="Item Name" required>
+                    <input type="number" id="quantity" placeholder="Quantity" required>
+                    <input type="number" id="weight" placeholder="Weight (kgs)" required>
+                    <input type="text" id="clientName" placeholder="Your Name" required>
+                    <input type="tel" id="clientPhone" placeholder="Phone Number (e.g. +254712345678)" required>
+                    <input type="email" id="clientEmail" placeholder="Email Address" required>
+                    <label>Notification Method:</label><br>
+                    <input type="radio" id="notifyEmail" name="notificationMethod" value="email" required>
+                    <label for="notifyEmail">Email</label><br>
+                    <input type="radio" id="notifySMS" name="notificationMethod" value="sms">
+                    <label for="notifySMS">SMS</label><br><br>
+                    <button type="submit" class="btn-submit">Create Receipt</button>
+                    <button id="loginPromptBtn" class="btn-submit" style="display: none;">Create Receipt</button>
+
+                </form>
+        </div>
+        <script>
+            document.getElementById("receiptForm").addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    showNotification("Please login to create a receipt", "error");
+                    
+                    return;
+                    
+                }
+                
+
+                const notificationMethod = document.querySelector('input[name="notificationMethod"]:checked')?.value;
+
+                const receiptData = {
+                    name: document.getElementById("name").value,
+                    quantity: document.getElementById("quantity").value,
+                    weight: document.getElementById("weight").value,
+                    notificationMethod,
+                    client: {
+                        name: document.getElementById("clientName").value,
+                        phone: document.getElementById("clientPhone").value,
+                        email: document.getElementById("clientEmail").value
+                    }
+                };
+
+                try {
+                    const response = await fetch("http://localhost:4000/api/receipt", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify(receiptData),
+                    });
+
+                    const data = await response.json();
+                    alert("Receipt created successfully! Check your " + notificationMethod + " for the tracking code.");
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("Failed to create receipt.");
+                }
+            });
+
+            function showNotification(message, type = "info") {
+                const notification = document.createElement("div");
+                notification.textContent = message;
+                notification.className = `notification ${type}`;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        </script>
+
+
+
+
+    </section>
+
+
+
+    <!------track code lookup (Frontend search)----->
+    <section>
+        <div class="tracker-box">
+            <h2>Track Your Storage Receipt</h2>
+            <p>Enter your Tracking ID below to view your storage details</p>
+            <div class="tracker-input">
+                <input type="text" placeholder="Enter Tracking ID (e.g., ABC123XY)" id="trackingIdInput">
+                <button onclick="searchReceipt()">Track</button>
+                <button onclick="downloadPDF()">Download PDF</button>
+
+            </div>
+            <img id="qrCodeImage" style="display: none; margin-top: 1rem;" />
+        </div>
+        <div id="receiptResult"></div>
+
+        <script>
+            async function searchReceipt() {
+                const trackingId = document.getElementById("trackingIdInput").value.trim();
+
+                if (!trackingId) {
+                    showNotification("Please enter a valid Tracking ID.", "error");
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`http://localhost:4000/api/receipt/track/${trackingId}`);
+
+                    if (!response.ok) {
+                        showNotification("Tracking ID not found. Please check and try again.", "error");
+                        return;
+                    }
+
+                    const receipt = await response.json();
+
+                    const resultHTML = `
+                                            <div class="receipt-details">
+                                            <h3>Storage Receipt Details</h3>
+                                            <p><strong>Item:</strong> ${receipt.name}</p>
+                                            <p><strong>Quantity:</strong> ${receipt.quantity}</p>
+                                            <p><strong>Weight:</strong> ${receipt.weight} kg</p>
+                                            <p><strong>Tracking ID:</strong> ${receipt.trackingId}</p>
+                                            <p><strong>Client:</strong> ${receipt.client?.name || "N/A"}</p>
+                                            <p><strong>Phone:</strong> ${receipt.client?.phone || "N/A"}</p>
+                                            <p><strong>Email:</strong> ${receipt.client?.email || "N/A"}</p>
+                                            <p><strong>Status:</strong> ${receipt.status}</p>
+                                            <p><strong>Deposit Date:</strong> ${formatDateTime(receipt.depositDate)}</p>
+                                            </div>
+                                        `;
+
+                    function formatDateTime(date) {
+                        return new Date(date).toLocaleString('en-US', {
+                            timeZone: 'Africa/Nairobi',
+                            dateStyle: 'medium',
+                            timeStyle: 'short'
+                        });
+                    }
+
+                    document.getElementById("receiptResult").innerHTML = resultHTML;
+                } catch (error) {
+                    console.error("Error:", error);
+                    showNotification("An error occurred while searching. Try again later.", "error");
+                }
+            }
+
+            // Notification system
+            function showNotification(message, type = "info") {
+                const notification = document.createElement("div");
+                notification.textContent = message;
+                notification.className = `notification ${type}`;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        </script>
+
+    </section>
+
+    <!--QR code generation (Display on frontend)-->
+    <section>
+        <script>
+            async function generateQRCode() {
+                const trackingId = document.getElementById("trackingIdInput").value;
+                if (!trackingId) return alert("Enter a tracking ID first.");
+
+                try {
+                    const response = await fetch(`http://localhost:4000/api/receipt/track/${trackingId}/qrcode`);
+                    const { qrCode } = await response.json();
+                    const qrImage = document.getElementById("qrCodeImage");
+                    qrImage.src = qrCode;
+                    qrImage.style.display = "block";
+                } catch (error) {
+                    console.error("QR Error:", error);
+                    alert("Could not generate QR Code.");
+                }
+            }
+        </script>
+    </section>
+
+    <!--pdf export (Download receipt)-->
+
+    <section>
+        <script>
+            function downloadPDF() {
+                const trackingId = document.getElementById("trackingIdInput").value;
+                if (!trackingId) return alert("Enter a tracking ID first.");
+                window.open(`http://localhost:4000/api/receipt/${trackingId}/pdf`, "_blank");
+            }
+        </script>>
+
+
+    </section>
+
+    <!----- services ----->
+
+    <section class="service">
+        <h1>Services We Offer</h1>
+        <p>We have a wide range of services available for you to choose from.</p>
+        <div class="row">
+            <div class="service-col">
+                <h3>Secure Storage</h3>
+                <p>Your items are stored in our secure, monitored facility with 24/7 protection.</p>
+            </div>
+            <div class="service-col">
+                <h3>Digital Tracking</h3>
+                <p>Real-time tracking of your stored items with our online SKR system.</p>
+            </div>
+            <div class="service-col">
+                <h3>Verified Transactions</h3>
+                <p>Every deposit and withdrawal is properly documented and verified.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!----facilities-->
+    <section class="facilities">
+        <h1>Facilities We Provide</h1>
+        <p>We offer a range of facilities to enhance your experience.</p>
+        <div class="row">
+            <div class="facilities-col">
+                <img src="images/i2.jpg">
+                <h3>Specialized Storage Solutions</h3>
+                <p>Document Storage for businesses, law firms, or personal records.<br> Valuables Storage for jewelry,
+                    art, antiques, and collectibles.<br> Business Inventory Storage for e-commerce, retail, or
+                    manufacturers.<br> Vehicle Storage for cars, motorcycles, and boats in secured parking</p>
+
+            </div>
+            <div class="facilities-col">
+                <img src="images/guard2.jpg">
+                <h3>Additional Value-Added Services</h3>
+                <p>Insurance Partnerships (optional coverage for stored items).<br> Notarized Storage Certificates (for
+                    legal or court use).<br> Online Payment & Billing (M-Pesa, credit/debit cards, bank transfers).<br>
+                    Short-Term & Long-Term Storage Plans (daily, weekly, monthly, yearly)</p>
+
+            </div>
+            <div class="facilities-col">
+                <img src="images/i6.jpg">
+                <h3>Security & Compliance Features</h3>
+                <p>Biometric Access Control (fingerprint or face recognition for authorized entry).<br> Audit Trail
+                    Reports (who accessed the storage and when).<br> Regulated Compliance (meets Kenyan business storage
+                    standards). <br>Disaster Recovery Plan (backup systems for emergencies)</p>
+
+            </div>
+        </div>
+
+        </div>
+
+    </section>
+    <!----testimonials---->
+    <section class=" testimonials">
+        <h1>What Our clients say</h1>
+        <P>Customer Satisfaction is Our Number One Priority. Don't just take our word for it. Read what your neighbors
+            have to say!</P>
+        <div class="row">
+            <div class="testimonial-col">
+                <img src="images/user1.jpg">
+                <div>
+                    <p>“Living in a small town things are quiet and we wanted a piece of mind knowing that things are
+                        okay when we are away from our products. Gordon Security was helpful and detailed every step of
+                        the process from the demonstration all the way to the installation of the system. The system is
+                        easy to use, and the Total Connect app is a huge plus! I would recommend Gordon Security to
+                        anyone looking for a security system.”</p>
+                    <h3>John Ndungu</h3>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star-o"></i>
+
+                </div>
+            </div>
+            <div class="testimonial-col">
+                <img src="images/user2.jpg">
+                <div>
+                    <p>“(Gordon Security Networks) provided us with a secure environment that runs efficiently and
+                        effectively” “At the Eagle Tribune Publishing Company we've been using Gordon Security to help
+                        manage and secure our network since 2011. Their expertise has provided us with a secure
+                        environment that runs efficiently and effectively. Gordon Security manages our 6 locations
+                        keeping the systems updated with the latest releases and helps us keep up with the ever changing
+                        challenges associated with network security. I would highly recommend their services.”</p>
+                    <h3>Christine Auma</h3>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star-half-o"></i>
+
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+    <!------Call To Action-->
+    <section section class="cta">
+        <h1>For Any Inquiries Please Contact Us</h1>
+        <a href="" class="hero-btn">CONTACT US</a>
+
+    </section>
+
+    <!----- Footer ----->
+    <section class="footer">
+        <div class="footer-row">
+            <h4>About Us</h4>
+            <p>
+                Welcome to Gordon Security Services. We operate a national network coordinated by our state-of-the-art
+                control centre in Nairobi.<br><br>
+                With branches in Nairobi, Mombasa, and Kisumu, our core values are Innovation, Ethics, and
+                Trust.<br><br>
+                We provide integrated security solutions including Access Control, CCTV, Fire, and Intruder Alarm
+                systems.<br><br>
+                Our high-calibre staff and dynamic management deliver value and peace of mind to our clients.
+            </p>
+        </div>
+
+        <div class="footer-row">
+            <h4>Contact Us</h4>
+            <p>Email: <a href="mailto:info@gordonsecurity.com">info@gordonsecurity.com</a></p>
+            <p>Phone: <a href="tel:+254715293884">+254 715 293 884</a></p>
+            <p>Address: Nairobi, Kenya</p>
+        </div>
+
+        <div class="footer-row">
+            <h4>Connect with Us</h4>
+            <div class="icons">
+                <a href="https://facebook.com" target="_blank"><i class="fa fa-facebook"></i></a>
+                <a href="https://twitter.com" target="_blank"><i class="fa fa-twitter"></i></a>
+                <a href="https://linkedin.com" target="_blank"><i class="fa fa-linkedin"></i></a>
+                <a href="https://wa.me/254715293884" target="_blank"><i class="fa fa-whatsapp"></i></a>
+                <a href="mailto:info@gordonsecurity.com"><i class="fa fa-envelope"></i></a>
+            </div>
+        </div>
+
+        <p class="footer-credit">© 2025 Gordon Security Company. All rights reserved.</p>
+    </section>
+
+
+    <!----- javascript for toggle menu ----->
+
+    <script>
+        var navLinks = document.getElementById("navLinks");
+        var menuOpen = document.getElementById("menuOpen");
+        var menuClose = document.getElementById("menuClose");
+
+        function showMenu() {
+            navLinks.style.right = "0";
+            menuOpen.style.display = "none";
+            menuClose.style.display = "block";
+        }
+
+        function hiddenMenu() {
+            navLinks.style.right = "-200px";
+            menuOpen.style.display = "block";
+            menuClose.style.display = "none";
+        }
+    </script>
+
+    <!-- Login Form -->
+    <div id="loginModal" class="auth-modal" style="display:none;">
+        <div class="auth-box">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="text" id="loginUsername" placeholder="Username" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <button onclick="toggleLogin()">Close</button>
+        </div>
+    </div>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const username = document.getElementById("loginUsername").value;
+            const password = document.getElementById("loginPassword").value;
+
+            try {
+                const response = await fetch("http://localhost:4000/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message);
+
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("user", JSON.stringify(data.user));
+
+                if (data.user.isAdmin) {
+                    window.location.href = "/admin.html"; // or your admin panel
+                } else {
+                    alert("Login successful!");
+                    location.reload();
+                }
+
+            } catch (err) {
+                alert("Login failed: " + err.message);
+            }
+        });
+
+
+    </script>
+
+    <!-- Register Form -->
+    <div id="registerModal" class="auth-modal" style="display:none;">
+        <div class="auth-box">
+            <h2>Register</h2>
+            <form id="registerForm">
+                <input type="text" id="registerUsername" placeholder="Username" required>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="password" id="registerPassword" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+            <button onclick="toggleRegister()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const username = document.getElementById("registerUsername").value;
+            const email = document.getElementById("registerEmail").value;
+            const password = document.getElementById("registerPassword").value;
+
+            try {
+                const response = await fetch("http://localhost:4000/api/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message);
+                alert("Registration successful! You can now log in.");
+                toggleRegister();
+            } catch (err) {
+                alert("Registration failed: " + err.message);
+            }
+        });
+
+    </script>
+
+    <script>
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        window.addEventListener("DOMContentLoaded", () => {
+            // Hide create receipt form if not logged in
+            if (!token || !user) {
+                const receiptSection = document.querySelector(".receipt-section");
+                if (receiptSection) {
+                    receiptSection.innerHTML = `<p style="text-align:center; color:red;">Please log in to create a receipt.</p>`;
+                }
+            }
+
+            // Hide withdraw button if not admin
+            if (user?.isAdmin !== true) {
+                const withdrawBtn = document.querySelector(".withdraw-btn");
+                if (withdrawBtn) withdrawBtn.style.display = "none";
+            }
+
+            // Add logout link
+            const nav = document.querySelector(".nav-links ul");
+            if (token && nav) {
+                const logoutLi = document.createElement("li");
+                logoutLi.innerHTML = `<a href="#" onclick="logout()">LOGOUT</a>`;
+                nav.appendChild(logoutLi);
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            alert("Logged out successfully.");
+            location.reload();
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+/* src/pages/Add.css */
+.add-page {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.add-page h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.add-form input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.add-form button {
+  padding: 0.7rem;
+  background-color: #003366;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.message {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: bold;
+}
+.track-search {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.track-search input {
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.track-search button {
+  padding: 0.5rem 1rem;
+  background-color: #006633;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.receipt-details {
+  margin-top: 1rem;
+  background: #eaf4ea;
+  padding: 1rem;
+  border-left: 5px solid #006633;
+}
+.weight-display-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.weight-display-wrapper input {
+  width: 100%;
+  padding-right: 2.5rem;
+  font-size: 16px;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.weight-display-wrapper .unit-suffix {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  pointer-events: none;
+  font-weight: 500;
+}

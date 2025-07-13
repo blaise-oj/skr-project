@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>User Login - Gordon Security</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(rgba(4, 9, 30, 0.6), rgba(4, 9, 30, 0.6)),
+        url('images/i5.jpg') no-repeat center center/cover;
+      min-height: 100vh;
+    }
+
+    /* NAVBAR */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 6%;
+      background-color: #819db1;
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-container img {
+      width: 60px;
+    }
+
+    .logo-text {
+      font-weight: bold;
+      color: #0e2a47;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .nav-links ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links ul li a {
+      text-decoration: none;
+      color: #0e2a47;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    .nav-links ul li a:hover {
+      color: #3498db;
+    }
+
+    /* LOGIN FORM */
+    .login-container {
+      max-width: 450px;
+      background: white;
+      margin: 60px auto;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .login-container h2 {
+      color: #0e2a47;
+      margin-bottom: 20px;
+    }
+
+    form input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: #3498db;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-login:hover {
+      background-color: #217dbb;
+    }
+
+    .register-link {
+      margin-top: 15px;
+    }
+
+    .register-link a {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-links ul {
+        flex-direction: column;
+        padding-top: 10px;
+        gap: 10px;
+      }
+
+      .login-container {
+        margin: 30px 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="logo-container">
+      <img src="images/logo.png" alt="Gordon Security Logo" />
+      <span class="logo-text">Gordon Security<br>Company</span>
+    </div>
+    <div class="nav-links">
+      <ul>
+        <li><a href="index.html">HOME</a></li>
+        <li><a href="about.html">ABOUT US</a></li>
+        <li><a href="service.html">SERVICES</a></li>
+        <li><a href="blog.html">BLOG</a></li>
+        <li><a href="contact.html">CONTACT</a></li>
+        <li><a href="login.html">LOGIN</a></li>
+        
+      </ul>
+    </div>
+  </nav>
+
+  <!-- LOGIN FORM -->
+  <div class="login-container">
+    <h2><i class="fas fa-user-shield" style="margin-right: 8px; color:#3498db;"></i>Login</h2>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Enter Username" required />
+      <input type="password" id="password" placeholder="Enter Password" required />
+      <button type="submit" class="btn-login">Login</button>
+    </form>
+    <div class="register-link">
+      <p>Don't have an account? <a href="register.html">Register here</a></p>
+    </div>
+  </div>
+
+  <!-- LOGIN SCRIPT -->
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const response = await fetch("http://localhost:4000/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message);
+
+        localStorage.setItem("token", data.token);
+        const payload = JSON.parse(atob(data.token.split('.')[1]));
+        localStorage.setItem("user", JSON.stringify({ username, isAdmin: payload?.isAdmin || false }));
+
+        alert("Login successful!");
+        window.location.href = "index.html";
+      } catch (err) {
+        alert("Login failed: " + err.message);
+      }
+    });
+  </script>
+</body>
+
+</html>

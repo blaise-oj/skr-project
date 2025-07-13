@@ -1,0 +1,31 @@
+import logo from './logo.png'
+import i1 from './i1.jpg'
+import i2 from './i2.jpg'
+import i3 from './i3.jpg'
+import i4 from './i4.jpg'
+import i5 from './i5.jpg'
+import i6 from './i6.jpg'
+import i7 from './i7.jpg'
+import i8 from './i8.jpg'
+import i9 from './i9.jpg'
+import i10 from './i10.jpg'
+import i11 from './i11.jpg'
+import i12 from './i12.jpg'
+import i13 from './i13.jpg'
+import i14 from './i14.jpg'
+import i15 from './i15.jpg'
+import i16 from './i16.jpg'
+import user2 from './user2.jpg'
+import add_icon from './add_icon.png'
+import basket_icon from './basket_icon.png'
+import cross_icon from './cross_icon.png'
+import logout_icon from './logout_icon.png'
+import list_icon from './list_icon.png'
+import profile_icon from './profile_icon.png'
+import profile_image from './profile_image.png'
+import search_icon from './search_icon.png'
+
+
+
+
+export const assets = {logo,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,user2,add_icon,basket_icon,cross_icon,logout_icon,list_icon,profile_icon,profile_image,search_icon}

@@ -1,0 +1,18 @@
+.edit-chooser {
+  padding: 2rem;
+}
+
+.edit-chooser h2 {
+  margin-bottom: 1rem;
+}
+
+.edit-chooser input {
+  padding: 0.5rem;
+  margin-right: 1rem;
+  width: 300px;
+}
+
+.edit-chooser button {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
