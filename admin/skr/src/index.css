@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:wght@100;200;400;600;700&display=swap');
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: outfit;
+
+}
+body{
+    min-height: 100vh;
+    background-color: aliceblue;
+
+}
+a{
+    text-decoration: none;
+    color: inherit;
+}
+hr{
+    border: none;
+    height: 1px;
+    background-color: grey;
+}
+.app-content {
+    display:flex;
+}

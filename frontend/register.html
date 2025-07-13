@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Registration - Gordon Security</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(rgba(4, 9, 30, 0.6), rgba(4, 9, 30, 0.6)),
+                  url('images/i5.jpg') no-repeat center center/cover;
+      min-height: 100vh;
+    }
+
+    /* NAVBAR */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 6%;
+      background-color: #819db1;
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-container img {
+      width: 60px;
+    }
+
+    .logo-text {
+      font-weight: bold;
+      color: #0e2a47;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .nav-links ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links ul li a {
+      text-decoration: none;
+      color: #0e2a47;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    .nav-links ul li a:hover {
+      color: #3498db;
+    }
+
+    /* REGISTER FORM */
+    .register-container {
+      max-width: 500px;
+      margin: 60px auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .register-container h2 {
+      color: #0e2a47;
+      margin-bottom: 20px;
+    }
+
+    form input {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .btn-register {
+      width: 100%;
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      border-radius: 6px;
+    }
+
+    .btn-register:hover {
+      background: #217dbb;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-links ul {
+        flex-direction: column;
+        padding-top: 10px;
+        gap: 10px;
+      }
+
+      .register-container {
+        margin: 30px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="logo-container">
+      <img src="images/logo.png" alt="Gordon Security Logo" />
+      <span class="logo-text">Gordon Security<br>Company</span>
+    </div>
+    <div class="nav-links">
+      <ul>
+        <li><a href="index.html">HOME</a></li>
+        <li><a href="about.html">ABOUT US</a></li>
+        <li><a href="service.html">SERVICES</a></li>
+        <li><a href="blog.html">BLOG</a></li>
+        <li><a href="contact.html">CONTACT</a></li>
+        <li><a href="login.html">LOGIN</a></li>
+        
+      </ul>
+    </div>
+  </nav>
+
+  <!-- REGISTER FORM -->
+  <div class="register-container">
+    <h2><i class="fas fa-user-plus" style="margin-right: 8px; color:#3498db;"></i>Register</h2>
+    <form id="registerForm">
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit" class="btn-register">Create Account</button>
+    </form>
+  </div>
+
+  <!-- REGISTRATION SCRIPT -->
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const response = await fetch("http://localhost:4000/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message);
+
+        alert("Account created successfully!");
+        window.location.href = "index.html";
+      } catch (err) {
+        alert("Registration failed: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>
+

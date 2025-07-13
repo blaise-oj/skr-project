@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe Keeping Receipts</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <section class="sub-header">
+        <nav>
+            <a href="index.html" class="logo-container">
+                <img src="images/logo.png" alt="Gordon Security Logo" class="logo">
+                <span class="logo-text">Gordon Security<br>Company</span>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <i class="fa fa-times" id="menuClose" onClick="hiddenMenu()"></i>
+                <ul>
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="about.html">ABOUT US</a></li>
+                    <li><a href="service.html">SERVICES</a></li>
+                    <li><a href="blog.html">BLOG</a></li>
+                    <li><a href="contact.html">CONTACT</a></li>
+                    <li><a href="login.html">LOGIN</a></li>
+                    
+                </ul>
+            </div>
+            <i class="fa fa-bars " id="menuOpen" onClick="showMenu()"></i>
+        </nav>
+
+        <h1>Why Nairobi Small Businesses Are Switching to Digital SKRs.</h1>
+        <P>At Gordon SKR Services, we provide secure, reliable, and fully tracked storage solutions in Nairobi. Whether
+            you need to store documents, business inventory,<br> or personal valuables, our climate-controlled, guarded
+            facilities ensure your items are protected 24/7. <br>With real-time tracking, insured storage options, and
+            flexible plans, we make safekeeping effortless.<br> Get your digital SKR receipt today and store with
+            confidence</P>
+    </section>
+
+    <!------blog page content------>
+    <section class="blog-content">
+        <div class="row">
+            <div class="blog-left">
+                <img src="images/Screenshot_21.png" alt="Security Services">
+                <h2>Benefits of Our Services</h2>
+                <p>Emergency Response Programs Fire Safety Protocols Smoke detectors, sprinkler systems, and fire
+                    extinguisher training. Armed Response Unit Partnership with rapid-response security firms for
+                    break-ins.Disaster Recovery Plan Flood/earthquake preparedness and evacuation drills. First Aid &
+                    Medical Assistance. Trained staff for medical emergencies.</p><br>
+                <p>Specialized Security ServicesVIP Escort for High-Value ItemsArmed guards during item
+                    transport.Undercover SurveillancePlainclothes guards to deter internal theft.K9 Unit (Dog
+                    Patrols)Trained dogs for narcotics/explosive detection (premium option).</p><br>
+                <p>Compliance & Training ProgramsSecurity Staff CertificationsLicensed by Private Security Regulatory
+                    Authority (PSRA) Kenya.Monthly Security AuditsVulnerability assessments and improvement
+                    reports.Client Security WorkshopsTrain storage users on safety best practices.</p><br>
+                <p>Physical Security Programs24/7 Armed Guard PatrolsOn-site security personnel monitoring the facility
+                    round-the-clock.Access Control SystemsBiometric scanners (fingerprint/facial recognition) for
+                    restricted zones.RFID keycards for authorized personnel.Perimeter SecurityElectric fencing,
+                    motion-sensor lights, and anti-climb walls.Vehicle InspectionScanning incoming/outgoing vehicles for
+                    unauthorized items.</p><br>
+                <div class="comment-box">
+                    <h3>Leave a Comment</h3>
+                    <form class="comment-form">
+                        <input type="text" placeholder="Enter Name">
+                        <input type="email" placeholder="Enter Email">
+                        <textarea rows="5" placeholder="Your comment"></textarea>
+                        <button type="submit" class="hero-btn red-btn">POST COMMENT</button>
+
+                    </form>
+
+                </div>
+
+            </div>
+            <div class="blog-right">
+                <h3>Accomplishments</h3>
+                <div>
+                    <span>Residential projects</span>
+                    <span>659+</span>
+                </div>
+                <div>
+                    <span>Commercial projects</span>
+                    <span>129+</span>
+                </div>
+                <div>
+                    <span>Years of Experience</span>
+                    <span>15 years</span>
+                </div>
+                <div>
+                    <span>Buildings secured</span>
+                    <span>330+</span>
+                </div>
+                <div>
+                    <span>Security Guards</span>
+                    <span>1000+</span>
+                </div>
+                <div>
+                    <span>Clients Served</span>
+                    <span>500+</span>
+                </div>
+                <div>
+                    <span>Security Systems</span>
+                    <span>200+</span>
+                </div>
+                <div>
+                    <span>Emergency Response</span>
+                    <span>24/7</span>
+                </div>
+                <div>
+                    <span>Security Training</span>
+                    <span>Monthly</span>
+                </div>
+
+
+
+            </div>
+
+    </section>
+
+
+
+
+    <!----- Footer ----->
+    <section class="footer">
+        <h4>About Us</h4>
+        <p> We believe in maintaining our heritage by employing high calibre staff and a management <br>that is dynamic
+            to changes in the environment and security industry, thus providing value for money to our clients. </p>
+        <div class="icons">
+            <a href="https://facebook.com" target="_blank" title="Join Us on Facebook"><i
+                    class="fa fa-facebook"></i></a>
+            <a href="https://twitter.com" target="_blank" title="Join Us on Twitter"><i class="fa fa-twitter"></i></a>
+            <a href="https://linkedin.com" target="_blank" title="Join our Linkedin account"><i
+                    class="fa fa-linkedin"></i></a>
+            <a href="https://wa.me/254715293884" target="_blank" title="Chat on WhatsApp"><i
+                    class="fa fa-whatsapp"></i></a>
+            <a href="mailto:info@gordonsecurity.com" title="Send us an Email"><i class="fa fa-envelope"></i></a>
+        </div>
+
+
+    </section>
+
+    <!----- javascript for toggle menu ----->
+
+    <script>
+        const navLinks = document.getElementById("navLinks");
+        const menuOpen = document.getElementById("menuOpen");
+        const menuClose = document.getElementById("menuClose");
+
+        function showMenu() {
+            navLinks.style.right = "0";
+            menuOpen.style.display = "none";
+            menuClose.style.display = "block";
+        }
+
+        function hiddenMenu() {
+            navLinks.style.right = "-200px";
+            menuOpen.style.display = "block";
+            menuClose.style.display = "none";
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,74 @@
+.register-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f7f7f7;
+}
+
+.register-form {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #ccc;
+  width: 300px;
+}
+
+.register-form h2 {
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.register-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.register-form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #282c34;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.register-form button:hover {
+  background-color: #444c5c;
+}
+
+.register-message {
+  text-align: center;
+  margin-top: 10px;
+  color: #333;
+}
+.auth-container {
+  max-width: 400px;
+  margin: auto;
+  padding: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-top: 100px;
+  background: #fff;
+}
+
+.auth-container input {
+  display: block;
+  width: 100%;
+  margin: 1rem 0;
+  padding: 10px;
+}
+
+.auth-container button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
