@@ -1,0 +1,4 @@
+backend/.env
+backend/migrateUsers.js
+backend/createInitialAdmin.js
+admin/skr/.gitignore

@@ -459,7 +459,7 @@ nav a {
     bottom: 20%;
     left: 50%;
     transform: translateX(-50%);
-    /* Keep other text-box styles */
+    /* Keeps other text-box styles */
 }
 
 .container {
@@ -546,7 +546,7 @@ nav a {
     width: 80%;
     margin: auto;
     text-align: center;
-    padding-top: 180px;
+    padding-top: 0px;
 }
 
 h1 {
@@ -600,7 +600,7 @@ h3 {
     width: 80%;
     margin: auto;
     text-align: center;
-    padding-top: 100px;
+    padding-top: 5px;
 }
 
 .facilities-col {
@@ -632,7 +632,7 @@ h3 {
     width: 80%;
     margin: auto;
     text-align: center;
-    padding-top: 100px;
+    padding-top: 5px;
 }
 
 .testimonial-col {

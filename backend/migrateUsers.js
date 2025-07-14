@@ -4,7 +4,7 @@ import User from "./models/user.model.js";
 
 const runMigration = async () => {
   try {
-    await mongoose.connect("mongodb+srv://blaise_oj:FPIBncVZPq9mnG0F@cluster1.jygtton.mongodb.net/skr?retryWrites=true&w=majority");
+    await mongoose.connect("mongodb+srv://blaise_oj:oaIeDfDDsdQUI2HV@cluster1.jygtton.mongodb.net/skr?retryWrites=true&w=majority");
     console.log("Connected to DB");
 
     const users = await Admin.find({ isAdmin: false });

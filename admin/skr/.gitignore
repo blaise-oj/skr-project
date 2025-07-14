@@ -25,3 +25,7 @@ dist-ssr
 # Environment variables
 .env
 
+# Secrets
+createInitialAdmin.js
+migrateUsers.js
+
