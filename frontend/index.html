@@ -17,15 +17,17 @@
     <section class="header">
         <!-- Top contact bar -->
         <section class="top-contact-bar">
-            <div class="contact-item">
+            <a href="tel:+254715293884" class="contact-item" style="text-decoration: none; color: inherit;">
                 <i class="fa fa-phone"></i> Office Line: +254 715 293 884
-            </div>
-            <div class="contact-item">
+            </a>
+            <a href="mailto:info@gordonsecurity.com" class="contact-item"
+                style="text-decoration: none; color: inherit;">
                 <i class="fa fa-envelope"></i> Email Us: info@gordonsecurity.com
-            </div>
-            <div class="contact-item">
+            </a>
+            <a href="contact.html" class="contact-item" style="text-decoration: none; color: inherit;">
                 <i class="fa fa-map-marker"></i> Address: Nairobi, Kenya
-            </div>
+            </a>
+
         </section>
 
         <!-- Navigation-->
@@ -85,7 +87,7 @@
                 <span class="dot" onclick="goToSlide(2)"></span>
                 <span class="dot" onclick="goToSlide(3)"></span>
             </div>
-        </div>        
+        </div>
         </div>
     </section>
     <!-- Slider functionality -->
@@ -138,22 +140,22 @@
     <section class="receipt-section">
         <div class="receipt-container">
             <h2>Create Storage Receipt</h2>
-                <form id="receiptForm">
-                    <input type="text" id="name" placeholder="Item Name" required>
-                    <input type="number" id="quantity" placeholder="Quantity" required>
-                    <input type="number" id="weight" placeholder="Weight (kgs)" required>
-                    <input type="text" id="clientName" placeholder="Your Name" required>
-                    <input type="tel" id="clientPhone" placeholder="Phone Number (e.g. +254712345678)" required>
-                    <input type="email" id="clientEmail" placeholder="Email Address" required>
-                    <label>Notification Method:</label><br>
-                    <input type="radio" id="notifyEmail" name="notificationMethod" value="email" required>
-                    <label for="notifyEmail">Email</label><br>
-                    <input type="radio" id="notifySMS" name="notificationMethod" value="sms">
-                    <label for="notifySMS">SMS</label><br><br>
-                    <button type="submit" class="btn-submit">Create Receipt</button>
-                    <button id="loginPromptBtn" class="btn-submit" style="display: none;">Create Receipt</button>
+            <form id="receiptForm">
+                <input type="text" id="name" placeholder="Item Name" required>
+                <input type="number" id="quantity" placeholder="Quantity" required>
+                <input type="number" id="weight" placeholder="Weight (kgs)" required>
+                <input type="text" id="clientName" placeholder="Your Name" required>
+                <input type="tel" id="clientPhone" placeholder="Phone Number (e.g. +254712345678)" required>
+                <input type="email" id="clientEmail" placeholder="Email Address" required>
+                <label>Notification Method:</label><br>
+                <input type="radio" id="notifyEmail" name="notificationMethod" value="email" required>
+                <label for="notifyEmail">Email</label><br>
+                <input type="radio" id="notifySMS" name="notificationMethod" value="sms">
+                <label for="notifySMS">SMS</label><br><br>
+                <button type="submit" class="btn-submit">Create Receipt</button>
+                <button id="loginPromptBtn" class="btn-submit" style="display: none;">Create Receipt</button>
 
-                </form>
+            </form>
         </div>
         <script>
             document.getElementById("receiptForm").addEventListener("submit", async (e) => {
@@ -163,11 +165,11 @@
 
                 if (!token) {
                     showNotification("Please login to create a receipt", "error");
-                    
+
                     return;
-                    
+
                 }
-                
+
 
                 const notificationMethod = document.querySelector('input[name="notificationMethod"]:checked')?.value;
 
@@ -461,7 +463,7 @@
             <h4>Contact Us</h4>
             <p>Email: <a href="mailto:info@gordonsecurity.com">info@gordonsecurity.com</a></p>
             <p>Phone: <a href="tel:+254715293884">+254 715 293 884</a></p>
-            <p>Address: Nairobi, Kenya</p>
+            <p>Address: <a href="contact.html">Nairobi, Kenya</a></p>
         </div>
 
         <div class="footer-row">
