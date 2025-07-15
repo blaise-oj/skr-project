@@ -459,7 +459,11 @@ nav a {
     bottom: 20%;
     left: 50%;
     transform: translateX(-50%);
+<<<<<<< HEAD
     /* Keeps other text-box styles */
+=======
+    /* Keep other text-box styles */
+>>>>>>> 481117bdb0dce95aaff74926f4673df9cb868189
 }
 
 .container {
@@ -546,7 +550,11 @@ nav a {
     width: 80%;
     margin: auto;
     text-align: center;
+<<<<<<< HEAD
     padding-top: 0px;
+=======
+    padding-top: 180px;
+>>>>>>> 481117bdb0dce95aaff74926f4673df9cb868189
 }
 
 h1 {
@@ -600,7 +608,11 @@ h3 {
     width: 80%;
     margin: auto;
     text-align: center;
+<<<<<<< HEAD
     padding-top: 5px;
+=======
+    padding-top: 100px;
+>>>>>>> 481117bdb0dce95aaff74926f4673df9cb868189
 }
 
 .facilities-col {
@@ -632,7 +644,11 @@ h3 {
     width: 80%;
     margin: auto;
     text-align: center;
+<<<<<<< HEAD
     padding-top: 5px;
+=======
+    padding-top: 100px;
+>>>>>>> 481117bdb0dce95aaff74926f4673df9cb868189
 }
 
 .testimonial-col {

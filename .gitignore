@@ -1,3 +1,5 @@
+#secrets
+.env
 backend/.env
 backend/migrateUsers.js
 backend/createInitialAdmin.js
