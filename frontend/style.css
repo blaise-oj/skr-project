@@ -784,7 +784,7 @@ h3 {
 }
 
 .sub-header h1 {
-    margin-top: 100px;
+    margin-top: 0px;
 
 }
 
@@ -909,6 +909,12 @@ h3 {
 @media(max-width:700px) {
     .sub-header h1 {
         font-size: 24px;
+        padding-top: 100px;
+
+    }
+    .sub-header p {
+        font-size: 14px;
+        padding-top: 50px;
     }
 }
 
