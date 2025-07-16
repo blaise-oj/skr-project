@@ -22,6 +22,11 @@
     border-radius: 3px 0px 0px 3px;
     cursor: pointer;
 }
+.sidebar-option img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
 @media (max-width : 900px){
     .sidebar-option p{
         display: none;
