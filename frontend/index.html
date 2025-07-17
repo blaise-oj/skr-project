@@ -90,6 +90,26 @@
         </div>
         </div>
     </section>
+
+    <!----- javascript for toggle menu ----->
+    <script>
+        var navLinks = document.getElementById("navLinks");
+        var menuOpen = document.getElementById("menuOpen");
+        var menuClose = document.getElementById("menuClose");
+
+        function showMenu() {
+            navLinks.style.right = "0";
+            menuOpen.style.display = "none";
+            menuClose.style.display = "block";
+        }
+
+        function hiddenMenu() {
+            navLinks.style.right = "-200px";
+            menuOpen.style.display = "block";
+            menuClose.style.display = "none";
+        }
+    </script>
+    
     <!-- Slider functionality -->
     <script>
         let currentSlide = 0;
@@ -479,27 +499,6 @@
 
         <p class="footer-credit">© 2025 Gordon Security Company. All rights reserved.</p>
     </section>
-
-
-    <!----- javascript for toggle menu ----->
-
-    <script>
-        var navLinks = document.getElementById("navLinks");
-        var menuOpen = document.getElementById("menuOpen");
-        var menuClose = document.getElementById("menuClose");
-
-        function showMenu() {
-            navLinks.style.right = "0";
-            menuOpen.style.display = "none";
-            menuClose.style.display = "block";
-        }
-
-        function hiddenMenu() {
-            navLinks.style.right = "-200px";
-            menuOpen.style.display = "block";
-            menuClose.style.display = "none";
-        }
-    </script>
 
     <!-- Login Form -->
     <div id="loginModal" class="auth-modal" style="display:none;">
