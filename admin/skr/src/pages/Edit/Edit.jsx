@@ -12,7 +12,7 @@ const Edit = () => {
 
   const handleSearch = async () => {
     try {
-      const res = await fetch(`http://localhost:4000/api/receipt/track/${trackingId}`);
+      const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/track/${trackingId}`);
       if (!res.ok) throw new Error('Receipt not found');
       const data = await res.json();
       setReceipt(data);
@@ -28,7 +28,7 @@ const Edit = () => {
     if (!window.confirm("Are you sure you want to delete this receipt?")) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/receipt/${receipt._id}`, {
+      const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/${receipt._id}`, {
         method: "DELETE",
       });
 
@@ -55,7 +55,7 @@ const Edit = () => {
 
   const handleUpdate = async () => {
     try {
-      const res = await fetch(`http://localhost:4000/api/receipt/${receipt._id}`, {
+      const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/${receipt._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(receipt)
