@@ -70,7 +70,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:4000/api/auth/admin/register", {
+      const res = await fetch("https://skr-project-backend.onrender.com/api/auth/admin/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

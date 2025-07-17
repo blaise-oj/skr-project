@@ -13,7 +13,7 @@ const Messages = () => {
             }
 
             try {
-                const res = await axios.get("http://localhost:4000/api/messages", {
+                const res = await axios.get("https://skr-project-backend.onrender.com/api/messages", {
                     headers: {
                         Authorization: `Bearer ${token}` // 👈 Send token in header
                     }

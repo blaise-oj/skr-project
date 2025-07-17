@@ -41,7 +41,7 @@ const AddReceipt = () => {
         };
 
         try {
-            const response = await fetch("http://localhost:4000/api/receipt", {
+            const response = await fetch("https://skr-project-backend.onrender.com/api/receipt", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(receiptPayload),
@@ -69,7 +69,7 @@ const AddReceipt = () => {
     // Search by track code
     const searchReceipt = async () => {
         try {
-            const res = await fetch(`http://localhost:4000/api/receipt/track/${trackCode}`);
+            const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/track/${trackCode}`);
             if (!res.ok) {
                 setSearchedReceipt(null);
                 return setMessage("❌ Receipt not found");
@@ -84,7 +84,7 @@ const AddReceipt = () => {
     };
 
     const downloadPDF = (trackingId) => {
-        window.open(`http://localhost:4000/api/receipt/${trackingId}/pdf`, "_blank");
+        window.open(`https://skr-project-backend.onrender.com/api/receipt/${trackingId}/pdf`, "_blank");
     };
 
 

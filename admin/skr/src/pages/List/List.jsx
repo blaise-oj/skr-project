@@ -22,7 +22,7 @@ const List = () => {
 
   const fetchReceipts = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/receipt");
+      const res = await fetch("https://skr-project-backend.onrender.com/api/receipt");
       let data = await res.json();
 
       // Sort receipts by depositDate descending
@@ -39,7 +39,7 @@ const List = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this receipt?")) return;
     try {
-      const res = await fetch(`http://localhost:4000/api/receipt/${id}`, {
+      const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/${id}`, {
         method: "DELETE",
       });
       const result = await res.json();
@@ -63,7 +63,7 @@ const List = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:4000/api/receipt/${selectedTrackingId}/withdraw`, {
+      const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/${selectedTrackingId}/withdraw`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ notificationMethod }),
@@ -87,7 +87,7 @@ const List = () => {
   };
 
   const downloadPDF = (trackingId) => {
-    window.open(`http://localhost:4000/api/receipt/${trackingId}/pdf`, "_blank");
+    window.open(`https://skr-project-backend.onrender.com/api/receipt/${trackingId}/pdf`, "_blank");
   };
 
   const handleEdit = (receipt) => {
