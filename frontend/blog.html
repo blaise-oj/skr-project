@@ -29,7 +29,7 @@
                     <li><a href="blog.html">BLOG</a></li>
                     <li><a href="contact.html">CONTACT</a></li>
                     <li><a href="login.html">LOGIN</a></li>
-                    
+
                 </ul>
             </div>
             <i class="fa fa-bars " id="menuOpen" onClick="showMenu()"></i>
@@ -66,15 +66,58 @@
                     unauthorized items.</p><br>
                 <div class="comment-box">
                     <h3>Leave a Comment</h3>
-                    <form class="comment-form">
-                        <input type="text" placeholder="Enter Name">
-                        <input type="email" placeholder="Enter Email">
-                        <textarea rows="5" placeholder="Your comment"></textarea>
+                    <form id="commentForm">
+                        <input type="text" name="name" placeholder="Enter Name" required>
+                        <input type="email" name="email" placeholder="Enter Email" required>
+                        <textarea name="comment" rows="5" placeholder="Your comment" required></textarea>
                         <button type="submit" class="hero-btn red-btn">POST COMMENT</button>
-
                     </form>
+                    <script>
+                        document.getElementById("commentForm").addEventListener("submit", async (e) => {
+                            e.preventDefault();
+                            const form = e.target;
+                            const button = form.querySelector("button");
+                            const originalText = button.textContent;
+
+                            // Show loading state
+                            button.disabled = true;
+                            button.textContent = "Posting...";
+
+                            const data = {
+                                name: form.name.value,
+                                email: form.email.value,
+                                comment: form.comment.value
+                            };
+
+                            try {
+                                const res = await fetch("https://skr-project-backend.onrender.com/api/comments", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify(data)
+                                });
+
+                                const result = await res.json();
+                                if (res.ok) {
+                                    alert("Comment posted successfully!");
+                                    form.reset();
+                                } else {
+                                    alert(result.message || "Failed to post comment.");
+                                }
+                            } catch (err) {
+                                console.error("Error submitting comment:", err);
+                                alert("An error occurred. Please try again.");
+                            }
+
+                            // Restore button
+                            button.disabled = false;
+                            button.textContent = originalText;
+                        });
+                    </script>
 
                 </div>
+
 
             </div>
             <div class="blog-right">

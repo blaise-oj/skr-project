@@ -109,7 +109,7 @@
             menuClose.style.display = "none";
         }
     </script>
-    
+
     <!-- Slider functionality -->
     <script>
         let currentSlide = 0;
@@ -246,7 +246,7 @@
     <section>
         <div class="tracker-box">
             <h2>Track Your Storage Receipt</h2>
-            <p>Enter your Tracking ID below to view your storage details</p>
+            <p>Enter your Tracking ID from your email or sms below to view your storage details</p>
             <div class="tracker-input">
                 <input type="text" placeholder="Enter Tracking ID (e.g., ABC123XY)" id="trackingIdInput">
                 <button onclick="searchReceipt()">Track</button>
@@ -255,40 +255,56 @@
             </div>
             <img id="qrCodeImage" style="display: none; margin-top: 1rem;" />
         </div>
+        <div id="loadingIndicator" style="display: none; text-align: center; margin-top: 1rem;">
+            <p>Loading receipt details...</p>
+        </div>
         <div id="receiptResult"></div>
 
         <script>
             async function searchReceipt() {
                 const trackingId = document.getElementById("trackingIdInput").value.trim();
+                const loadingIndicator = document.getElementById("loadingIndicator");
+                const receiptResult = document.getElementById("receiptResult");
+
+                receiptResult.innerHTML = ""; // Clear previous results
 
                 if (!trackingId) {
                     showNotification("Please enter a valid Tracking ID.", "error");
                     return;
                 }
 
+                // Show loading message
+                loadingIndicator.style.display = "block";
+
                 try {
                     const response = await fetch(`https://skr-project-backend.onrender.com/api/receipt/track/${trackingId}`);
 
                     if (!response.ok) {
-                        showNotification("Tracking ID not found. Please check and try again.", "error");
+                        receiptResult.innerHTML = `
+                                                        <div style="text-align: center; margin-top: 1rem;">
+                                                            <p style="color: red; font-weight: bold; font-size: 18px;">Receipt not found.</p>
+                                                            <p style="color: red; font-weight: bold;">Please enter a valid tracking code or contact our customer service for assistance.</p>
+                                                        </div>
+                                                    `;
                         return;
                     }
+
 
                     const receipt = await response.json();
 
                     const resultHTML = `
-                                            <div class="receipt-details">
+                                        <div class="receipt-details">
                                             <h3>Storage Receipt Details</h3>
-                                            <p><strong>Item:</strong> ${receipt.name}</p>
-                                            <p><strong>Quantity:</strong> ${receipt.quantity}</p>
-                                            <p><strong>Weight:</strong> ${receipt.weight} kg</p>
-                                            <p><strong>Tracking ID:</strong> ${receipt.trackingId}</p>
-                                            <p><strong>Client:</strong> ${receipt.client?.name || "N/A"}</p>
-                                            <p><strong>Phone:</strong> ${receipt.client?.phone || "N/A"}</p>
-                                            <p><strong>Email:</strong> ${receipt.client?.email || "N/A"}</p>
-                                            <p><strong>Status:</strong> ${receipt.status}</p>
-                                            <p><strong>Deposit Date:</strong> ${formatDateTime(receipt.depositDate)}</p>
-                                            </div>
+                                            <p><span class="label">Name:</span> <span class="value">${receipt.client?.name || "N/A"}</span></p>
+                                            <p><span class="label">Item:</span> <span class="value">${receipt.name}</span></p>
+                                            <p><span class="label">Tracking ID:</span> <span class="value">${receipt.trackingId}</span></p>
+                                            <p><span class="label">Quantity:</span> <span class="value">${receipt.quantity}</span></p>
+                                            <p><span class="label">Weight:</span> <span class="value">${receipt.weight} kg</span></p>
+                                            <p><span class="label">Phone:</span> <span class="value">${receipt.client?.phone || "N/A"}</span></p>
+                                            <p><span class="label">Email:</span> <span class="value">${receipt.client?.email || "N/A"}</span></p>
+                                            <p><span class="label">Status:</span> <span class="value">${receipt.status}</span></p>
+                                            <p><span class="label">Deposit Date:</span> <span class="value">${formatDateTime(receipt.depositDate)}</span></p>
+                                        </div>
                                         `;
 
                     function formatDateTime(date) {
@@ -303,6 +319,9 @@
                 } catch (error) {
                     console.error("Error:", error);
                     showNotification("An error occurred while searching. Try again later.", "error");
+                } finally {
+                    // Hide loading status whether success or error
+                    loadingIndicator.style.display = "none";
                 }
             }
 

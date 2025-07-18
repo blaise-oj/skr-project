@@ -96,6 +96,13 @@
                         e.preventDefault();
 
                         const form = e.target;
+                        const button = form.querySelector("button");
+                        const originalButtonText = button.textContent;
+
+                        // Disable button and show loading text
+                        button.disabled = true;
+                        button.textContent = "Sending...";
+
                         const data = {
                             name: form.name.value,
                             email: form.email.value,
@@ -124,6 +131,10 @@
                         } catch (err) {
                             console.error("Submission error:", err);
                             alert("An error occurred while sending your message.");
+                        } finally {
+                            // Re-enable the button and restore original text
+                            button.disabled = false;
+                            button.textContent = originalButtonText;
                         }
                     });
                 </script>
