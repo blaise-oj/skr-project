@@ -29,8 +29,9 @@ import messages_icon from './messages_icon.png'
 import chat_icon from './chat_icon.png'
 import lists_icon from './lists_icon.png'
 import edit_icon from './edit_icon.png'
+import comments_icon from './comments_icon.png'
 
 
 
 
-export const assets = {logo,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,user2,add_icon,basket_icon,cross_icon,logout_icon,list_icon,profile_icon,profile_image,search_icon,layout_icon,messages_icon,lists_icon,chat_icon,edit_icon}
+export const assets = {logo,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,user2,add_icon,basket_icon,cross_icon,logout_icon,list_icon,profile_icon,profile_image,search_icon,layout_icon,messages_icon,lists_icon,chat_icon,edit_icon,comments_icon}

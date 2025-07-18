@@ -13,6 +13,7 @@ import Register from './pages/Register/Register';
 import './App.css';
 import ProtectedRoute from './routes/ProtectedRoute.jsx';
 import Messages from './pages/Messages/Messages.jsx';
+import Comments from './pages/Comments/Comments.jsx';
 
 
 
@@ -101,12 +102,21 @@ const App = () => {
           }
         />
       </Route>
-      
+
       <Route
         path="/messages"
         element={
           <AppLayout>
             <Messages />
+          </AppLayout>
+        }
+      />
+
+      <Route
+        path="/comments"
+        element={
+          <AppLayout>
+            <Comments />
           </AppLayout>
         }
       />

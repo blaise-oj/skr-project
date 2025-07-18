@@ -29,6 +29,10 @@ const Sidebar = () => {
           <img src={assets.messages_icon} alt='' />
           <p>Messages</p>
         </NavLink>
+        <NavLink to="/comments" className='sidebar-option'>
+          <img src={assets.comments_icon} alt='' />
+          <p>Comments</p>
+        </NavLink>
         
       </div>
 
