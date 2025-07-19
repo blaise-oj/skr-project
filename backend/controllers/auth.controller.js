@@ -70,14 +70,14 @@ export const verifyEmail = async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    const user = await User.findOne({ verificationToken: token });
 
     if (!user || user.isVerified) {
       return res.send(`<h2>Email already verified or invalid link</h2>`);
     }
 
     user.isVerified = true;
+    user.verificationToken = undefined;
     await user.save();
 
     return res.send(`
@@ -88,9 +88,10 @@ export const verifyEmail = async (req, res) => {
     `);
   } catch (err) {
     console.error(err);
-    return res.send(`<h2>Invalid or expired verification link</h2>`);
+    return res.send(`<h2>Error verifying email</h2>`);
   }
 };
+
 
 
 
