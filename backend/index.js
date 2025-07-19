@@ -1,3 +1,9 @@
+
+import dotenv from "dotenv";
+dotenv.config();
+console.log("BACKEND_URL:", process.env.BACKEND_URL);
+
+
 import express from "express"
 import cors from "cors"
 import { connectDB } from "./config/db.js"
@@ -6,12 +12,11 @@ import receiptRoutes from "./routes/receipt.route.js"
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js"
 import commentRoutes from "./routes/comment.routes.js";
-import dotenv from "dotenv";
+
 
 
 
 //app config
-dotenv.config();
 const app = express()
 const port = process.env.PORT || 4000;
 
