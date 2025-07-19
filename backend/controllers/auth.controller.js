@@ -43,11 +43,12 @@ export const registerUser = async (req, res) => {
       },
     });
 
-    const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+    const verifyUrl = `${process.env.FRONTEND_URL}/verify.html?token=${verificationToken}`;
+
 
     await transporter.sendMail({
       to: email,
-      subject: "Verify Your Email - Gordon Security",
+      subject: "Verify Your Email - Gordon Security Company",
       html: `<h2>Verify Your Email</h2><p>Click the link below to verify your email:</p><a href="${verifyUrl}">Verify Email</a>`,
     });
 
