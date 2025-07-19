@@ -60,6 +60,32 @@ export const registerUser = async (req, res) => {
     res.status(500).json({ message: "Server error: " + err.message });
   }
 };
+// POST /api/auth/verify-email
+export const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ success: false, message: "Token is required" });
+    }
+
+    const user = await User.findOne({ verificationToken: token });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid or expired token" });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined; // remove token
+    await user.save();
+
+    res.json({ success: true, message: "Email verified successfully" });
+  } catch (error) {
+    console.error("Verification error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 
 
 
