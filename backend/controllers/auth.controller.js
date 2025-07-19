@@ -43,7 +43,8 @@ export const registerUser = async (req, res) => {
       },
     });
 
-    const verifyUrl = `${process.env.FRONTEND_URL}/verify.html?token=${verificationToken}`;
+    const verifyUrl = `${process.env.BACKEND_URL}/api/auth/verify-email?token=${verificationToken}`;
+
 
 
     await transporter.sendMail({
@@ -62,27 +63,32 @@ export const registerUser = async (req, res) => {
 };
 // POST /api/auth/verify-email
 export const verifyEmail = async (req, res) => {
+  const { token } = req.query;
+
+  if (!token) {
+    return res.send(`<h2>Invalid or missing token</h2>`);
+  }
+
   try {
-    const { token } = req.body;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
 
-    if (!token) {
-      return res.status(400).json({ success: false, message: "Token is required" });
-    }
-
-    const user = await User.findOne({ verificationToken: token });
-
-    if (!user) {
-      return res.status(400).json({ success: false, message: "Invalid or expired token" });
+    if (!user || user.isVerified) {
+      return res.send(`<h2>Email already verified or invalid link</h2>`);
     }
 
     user.isVerified = true;
-    user.verificationToken = undefined; // remove token
     await user.save();
 
-    res.json({ success: true, message: "Email verified successfully" });
-  } catch (error) {
-    console.error("Verification error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    return res.send(`
+      <div style="text-align:center; font-family:sans-serif;">
+        <h2>✅ Email verified successfully!</h2>
+        <p>You can now <a href="${process.env.FRONTEND_URL}/login.html">log in</a>.</p>
+      </div>
+    `);
+  } catch (err) {
+    console.error(err);
+    return res.send(`<h2>Invalid or expired verification link</h2>`);
   }
 };
 

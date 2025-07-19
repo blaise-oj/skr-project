@@ -33,6 +33,4 @@ router.post("/login", loginAdmin); // Shared login endpoint
 // Protected admin routes
 router.post("/admin/register", verifyAdmin, registerAdmin); // Admin-only registration
 
-router.post("/verify-email", verifyEmail);
-
 export default router;
