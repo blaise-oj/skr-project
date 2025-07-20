@@ -129,10 +129,96 @@ export const loginUser = async (req, res) => {
   });
 };
 
+// Forgot Password - Generate and send reset token
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      // Don't reveal if user doesn't exist for security
+      return res.status(200).json({ 
+        message: "If this email exists, a reset link has been sent" 
+      });
+    }
+    
+    // Generate reset token (expires in 1 hour)
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
+    
+    // Send email with reset link
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password.html?token=${resetToken}`;
+    
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+    
+    await transporter.sendMail({
+      to: user.email,
+      subject: "Password Reset - Gordon Security Company",
+      html: `
+        <div style="font-family:sans-serif; text-align:center;">
+          <h2>Password Reset Request</h2>
+          <p>You requested to reset your password. Click below to continue:</p>
+          <a href="${resetUrl}" 
+             style="display:inline-block; padding:10px 20px; background:#007bff; color:white; border-radius:5px; text-decoration:none;">
+             Reset Password
+          </a>
+          <p>This link expires in 1 hour. If you didn't request this, please ignore this email.</p>
+        </div>
+      `,
+    });
+    
+    res.status(200).json({ 
+      message: "If this email exists, a reset link has been sent" 
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error processing request" });
+  }
+};
 
-
-
-
+// Reset Password - Verify token and update password
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    
+    // Find user by token and check expiration
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+    
+    if (!user) {
+      return res.status(400).json({ 
+        message: "Invalid or expired token. Please request a new reset link." 
+      });
+    }
+    
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Update password and clear token
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+    
+    res.status(200).json({ 
+      message: "Password updated successfully. You can now login with your new password." 
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error resetting password" });
+  }
+};
 
 
 // auth.controller.js

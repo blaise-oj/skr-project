@@ -152,6 +152,7 @@
           <li><a href="blog.html">BLOG</a></li>
           <li><a href="contact.html">CONTACT</a></li>
           <li><a href="login.html">LOGIN</a></li>
+          
         </ul>
       </div>
       <i class="fa fa-bars" id="menuOpen" onclick="showMenu()"></i>
@@ -164,22 +165,22 @@
   <div class="register-section">
     <h2>Register</h2>
     <form id="registerForm">
-      <label for="username">Name</label>
-      <input type="text" id="username" name="username" required />
+      <label for="username"></label>
+      <input type="text" id="username" name="username" placeholder="Enter your username" required />
 
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" required />
+      <label for="email"></label>
+      <input type="email" id="email" name="email" placeholder="Enter your email address" required />
 
-      <label for="password">Password</label>
+      <label for="password"></label>
       <div style="position: relative;">
-        <input type="password" id="password" name="password" required />
+        <input type="password" id="password" name="password" placeholder="Enter your password" required />
         <i class="fa fa-eye toggle-password" data-target="password"
           style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #3498db;"></i>
       </div>
 
-      <label for="confirmPassword">Confirm Password</label>
+      <label for="confirmPassword"></label>
       <div style="position: relative;">
-        <input type="password" id="confirmPassword" name="confirmPassword" required />
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required />
         <i class="fa fa-eye toggle-password" data-target="confirmPassword"
           style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #3498db;"></i>
       </div>
@@ -200,11 +201,7 @@
     </form>
     <p id="registerError" style="display: none; color: red; font-size: 14px; text-align: center; margin-top: 10px;"></p>
     <p id="registerSuccess" style="display: none; color: green; font-size: 14px; text-align: center; margin-top: 10px;"></p>
-
-
-
   </div>
-
 
   <!-- FOOTER -->
   <section class="footer">
