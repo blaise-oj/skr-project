@@ -189,13 +189,20 @@
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ username, password })
+          body: JSON.stringify({ username, password }) // or email + password depending on your backend
         });
 
-        const data = await response.json();
+        let data;
+
+        try {
+          data = await response.json(); // might fail if response is not JSON (e.g., server error returning HTML)
+        } catch (jsonErr) {
+          const text = await response.text(); // fallback to raw text
+          throw new Error(`Invalid server response: ${text}`);
+        }
 
         if (!response.ok) {
-          messageDiv.textContent = data.message;
+          messageDiv.textContent = data.message || "Login failed.";
           messageDiv.style.color = "red";
           return;
         }
@@ -214,10 +221,13 @@
 
       } catch (error) {
         console.error("Login error:", error);
-        messageDiv.textContent = "Something went wrong. Try again.";
+        messageDiv.textContent = error.message || "Something went wrong. Try again.";
         messageDiv.style.color = "red";
       }
+
     });
+
+
 
   </script>
 </body>
