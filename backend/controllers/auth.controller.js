@@ -48,9 +48,9 @@ export const registerUser = async (req, res) => {
 
 
     await transporter.sendMail({
-  to: email,
-  subject: "Verify Your Email - Gordon Security Company",
-  html: `
+      to: email,
+      subject: "Verify Your Email - Gordon Security Company",
+      html: `
     <div style="font-family:sans-serif; text-align:center;">
       <h2>Verify Your Email - Gordon Security</h2>
       <p>Click below to verify your email:</p>
@@ -61,7 +61,7 @@ export const registerUser = async (req, res) => {
       <p>If you didn’t request this, ignore this email.</p>
     </div>
   `,
-});
+    });
 
     res.status(201).json({
       message: "User registered. Please check your email to verify your account.",
@@ -101,6 +101,35 @@ export const verifyEmail = async (req, res) => {
     return res.send(`<h2>Error verifying email</h2>`);
   }
 };
+
+
+export const loginUser = async (req, res) => {
+  const { username, password } = req.body;
+
+  const user = await User.findOne({ username });
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  if (!user.isVerified) {
+    return res.status(403).json({ message: "Please verify your email first." });
+  }
+
+  const token = jwt.sign(
+    { id: user._id, username: user.username, isAdmin: false },
+    SECRET,
+    { expiresIn: "1d" }
+  );
+
+  res.json({
+    token,
+    user: {
+      username: user.username
+    }
+  });
+};
+
+
 
 
 
