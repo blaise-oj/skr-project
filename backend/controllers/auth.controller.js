@@ -48,10 +48,20 @@ export const registerUser = async (req, res) => {
 
 
     await transporter.sendMail({
-      to: email,
-      subject: "Verify Your Email - Gordon Security Company",
-      html: `<h2>Verify Your Email</h2><p>Click the link below to verify your email:</p><a href="${verifyUrl}">Verify Email</a>`,
-    });
+  to: email,
+  subject: "Verify Your Email - Gordon Security Company",
+  html: `
+    <div style="font-family:sans-serif; text-align:center;">
+      <h2>Verify Your Email - Gordon Security</h2>
+      <p>Click below to verify your email:</p>
+      <a href="${verifyUrl}" 
+         style="display:inline-block; padding:10px 20px; background:#007bff; color:white; border-radius:5px; text-decoration:none;">
+         Verify Email
+      </a>
+      <p>If you didn’t request this, ignore this email.</p>
+    </div>
+  `,
+});
 
     res.status(201).json({
       message: "User registered. Please check your email to verify your account.",
