@@ -147,18 +147,29 @@ const createReceipt = async (req, res) => {
 
 
 // Search by Tracking ID (renamed from searchByTrackCode)
+// Protect route with authentication middleware
 const searchByTrackingId = async (req, res) => {
   try {
-    const { trackingId } = req.params; // Changed from 'code' to 'trackingId'
+    const { trackingId } = req.params;
+    const userEmail = req.user?.email; // this comes from verifyToken middleware
+
     const foundReceipt = await receipt.findOne({ trackingId });
+
     if (!foundReceipt) {
       return res.status(404).json({ message: "Receipt not found" });
     }
+
+    // Only allow if the receipt's client email matches the logged-in user's email
+    if (foundReceipt.client?.email !== userEmail) {
+      return res.status(403).json({ message: "You are not authorized to view this receipt." });
+    }
+
     res.status(200).json(foundReceipt);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 // PDF export function

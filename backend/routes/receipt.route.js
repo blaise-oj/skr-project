@@ -2,6 +2,7 @@ import express from "express"
 import receipt from "../models/receipt.model.js"
 import {getReceipts,getReceipt,createReceipt,deleteReceipt,searchByTrackingId,markAsWithdrawn,generateReceiptPDF, generateQRCode, updateReceipt} from "../controllers/receipt.controller.js"
 import { validateReceipt } from "../middleware/validateReceipt.js"
+import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router()
 
@@ -17,6 +18,7 @@ router.delete("/:id",deleteReceipt);
 
 router.get("/:trackingId/pdf", generateReceiptPDF);
 router.get("/track/:trackingId/qrcode", generateQRCode);
+router.get('/track/:trackingId', verifyToken, searchByTrackingId);
 
 router.put("/:id", updateReceipt);
 

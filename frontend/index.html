@@ -44,7 +44,8 @@
                     <li><a href="service.html">SERVICES</a></li>
                     <li><a href="blog.html">BLOG</a></li>
                     <li><a href="contact.html">CONTACT</a></li>
-                    <li><a href="login.html">LOGIN</a></li>
+                    <li id="auth-link"><a href="login.html">LOGIN</a></li> <!-- This will change dynamically -->
+
 
                 </ul>
             </div>
@@ -153,95 +154,6 @@
     </script>
 
 
-
-
-    <!------connecting frontend to backend using fetch API------->
-
-    <section class="receipt-section">
-        <div class="receipt-container">
-            <h2>Create Storage Receipt</h2>
-            <form id="receiptForm">
-                <input type="text" id="name" placeholder="Item Name" required>
-                <input type="number" id="quantity" placeholder="Quantity" required>
-                <input type="number" id="weight" placeholder="Weight (kgs)" required>
-                <input type="text" id="clientName" placeholder="Your Name" required>
-                <input type="tel" id="clientPhone" placeholder="Phone Number (e.g. +254712345678)" required>
-                <input type="email" id="clientEmail" placeholder="Email Address" required>
-                <label>Notification Method:</label><br>
-                <input type="radio" id="notifyEmail" name="notificationMethod" value="email" required>
-                <label for="notifyEmail">Email</label><br>
-                <input type="radio" id="notifySMS" name="notificationMethod" value="sms">
-                <label for="notifySMS">SMS</label><br><br>
-                <button type="submit" class="btn-submit">Create Receipt</button>
-                <button id="loginPromptBtn" class="btn-submit" style="display: none;">Create Receipt</button>
-
-            </form>
-        </div>
-        <script>
-            document.getElementById("receiptForm").addEventListener("submit", async (e) => {
-                e.preventDefault();
-
-                const token = localStorage.getItem("token");
-
-                if (!token) {
-                    showNotification("Please login to create a receipt", "error");
-
-                    return;
-
-                }
-
-
-                const notificationMethod = document.querySelector('input[name="notificationMethod"]:checked')?.value;
-
-                const receiptData = {
-                    name: document.getElementById("name").value,
-                    quantity: document.getElementById("quantity").value,
-                    weight: document.getElementById("weight").value,
-                    notificationMethod,
-                    client: {
-                        name: document.getElementById("clientName").value,
-                        phone: document.getElementById("clientPhone").value,
-                        email: document.getElementById("clientEmail").value
-                    }
-                };
-
-                try {
-                    const response = await fetch("https://skr-project-backend.onrender.com/api/receipt", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                        },
-                        body: JSON.stringify(receiptData),
-                    });
-
-                    const data = await response.json();
-                    alert("Receipt created successfully! Check your " + notificationMethod + " for the tracking code.");
-                } catch (error) {
-                    console.error("Error:", error);
-                    alert("Failed to create receipt.");
-                }
-            });
-
-            function showNotification(message, type = "info") {
-                const notification = document.createElement("div");
-                notification.textContent = message;
-                notification.className = `notification ${type}`;
-                document.body.appendChild(notification);
-
-                setTimeout(() => {
-                    notification.remove();
-                }, 3000);
-            }
-        </script>
-
-
-
-
-    </section>
-
-
-
     <!------track code lookup (Frontend search)----->
     <section>
         <div class="tracker-box">
@@ -262,6 +174,14 @@
 
         <script>
             async function searchReceipt() {
+                const token = localStorage.getItem("userToken");
+                const username = localStorage.getItem("email");
+
+                if (!token || !username) {
+                    showNotification("Please log in to input the tracking code.", "error");
+                    return;
+                }
+
                 const trackingId = document.getElementById("trackingIdInput").value.trim();
                 const loadingIndicator = document.getElementById("loadingIndicator");
                 const receiptResult = document.getElementById("receiptResult");
@@ -273,70 +193,68 @@
                     return;
                 }
 
-                // Show loading message
                 loadingIndicator.style.display = "block";
 
                 try {
-                    const response = await fetch(`https://skr-project-backend.onrender.com/api/receipt/track/${trackingId}`);
+                    const response = await fetch(`https://skr-project-backend.onrender.com/api/receipt/track/${trackingId}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}` // Send token to identify the user
+                        }
+                    });
 
                     if (!response.ok) {
                         receiptResult.innerHTML = `
-                                                        <div style="text-align: center; margin-top: 1rem;">
-                                                            <p style="color: red; font-weight: bold; font-size: 18px;">Receipt not found.</p>
-                                                            <p style="color: red; font-weight: bold;">Please enter a valid tracking code or contact our customer service for assistance.</p>
-                                                        </div>
-                                                    `;
+          <div style="text-align: center; margin-top: 1rem;">
+            <p style="color: red; font-weight: bold; font-size: 18px;">Receipt not found or unauthorized.</p>
+            <p style="color: red; font-weight: bold;">Ensure the tracking code is correct and you're authorized.</p>
+          </div>
+        `;
                         return;
                     }
 
-
                     const receipt = await response.json();
 
-                    const resultHTML = `
-                                        <div class="receipt-details">
-                                            <h3>Storage Receipt Details</h3>
-                                            <p><span class="label">Name:</span> <span class="value">${receipt.client?.name || "N/A"}</span></p>
-                                            <p><span class="label">Item:</span> <span class="value">${receipt.name}</span></p>
-                                            <p><span class="label">Tracking ID:</span> <span class="value">${receipt.trackingId}</span></p>
-                                            <p><span class="label">Quantity:</span> <span class="value">${receipt.quantity}</span></p>
-                                            <p><span class="label">Weight:</span> <span class="value">${receipt.weight} kg</span></p>
-                                            <p><span class="label">Phone:</span> <span class="value">${receipt.client?.phone || "N/A"}</span></p>
-                                            <p><span class="label">Email:</span> <span class="value">${receipt.client?.email || "N/A"}</span></p>
-                                            <p><span class="label">Status:</span> <span class="value">${receipt.status}</span></p>
-                                            <p><span class="label">Deposit Date:</span> <span class="value">${formatDateTime(receipt.depositDate)}</span></p>
-                                        </div>
-                                        `;
-
-                    function formatDateTime(date) {
-                        return new Date(date).toLocaleString('en-US', {
-                            timeZone: 'Africa/Nairobi',
-                            dateStyle: 'medium',
-                            timeStyle: 'short'
-                        });
+                    // Make sure this receipt belongs to the logged-in user
+                    if (receipt.client?.email !== email) {
+                        receiptResult.innerHTML = `
+          <p style="color:red; text-align:center;">You are not authorized to view this receipt.</p>
+        `;
+                        return;
                     }
+
+                    const resultHTML = `
+        <div class="receipt-details">
+          <h3>Storage Receipt Details</h3>
+          <p><span class="label">Name:</span> <span class="value">${receipt.client?.name || "N/A"}</span></p>
+          <p><span class="label">Item:</span> <span class="value">${receipt.name}</span></p>
+          <p><span class="label">Tracking ID:</span> <span class="value">${receipt.trackingId}</span></p>
+          <p><span class="label">Quantity:</span> <span class="value">${receipt.quantity}</span></p>
+          <p><span class="label">Weight:</span> <span class="value">${receipt.weight} kg</span></p>
+          <p><span class="label">Phone:</span> <span class="value">${receipt.client?.phone || "N/A"}</span></p>
+          <p><span class="label">Email:</span> <span class="value">${receipt.client?.email || "N/A"}</span></p>
+          <p><span class="label">Status:</span> <span class="value">${receipt.status}</span></p>
+          <p><span class="label">Deposit Date:</span> <span class="value">${formatDateTime(receipt.depositDate)}</span></p>
+        </div>
+      `;
 
                     document.getElementById("receiptResult").innerHTML = resultHTML;
                 } catch (error) {
                     console.error("Error:", error);
                     showNotification("An error occurred while searching. Try again later.", "error");
                 } finally {
-                    // Hide loading status whether success or error
                     loadingIndicator.style.display = "none";
                 }
-            }
 
-            // Notification system
-            function showNotification(message, type = "info") {
-                const notification = document.createElement("div");
-                notification.textContent = message;
-                notification.className = `notification ${type}`;
-                document.body.appendChild(notification);
-
-                setTimeout(() => {
-                    notification.remove();
-                }, 3000);
+                function formatDateTime(date) {
+                    return new Date(date).toLocaleString("en-US", {
+                        timeZone: "Africa/Nairobi",
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                    });
+                }
             }
         </script>
+
 
     </section>
 
@@ -605,40 +523,39 @@
     </script>
 
     <script>
-        const token = localStorage.getItem("token");
-        const user = JSON.parse(localStorage.getItem("user"));
+        // ✅ Define logout in global scope
+        function logout() {
+            localStorage.removeItem("userToken");
+            localStorage.removeItem("username");
+            alert("You have been logged out.");
+            window.location.href = "login.html";
+        }
 
-        window.addEventListener("DOMContentLoaded", () => {
-            // Hide create receipt form if not logged in
-            if (!token || !user) {
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("userToken");
+            const username = localStorage.getItem("username");
+            const authLink = document.getElementById("auth-link");
+
+            if (authLink) {
+                if (token) {
+                    authLink.innerHTML = `<a href="#" onclick="logout()">LOGOUT</a>`;
+                } else {
+                    authLink.innerHTML = `<a href="login.html">LOGIN</a>`;
+                }
+            }
+
+            // Optional: Hide receipt form for non-logged-in users
+            if (!token || !username) {
                 const receiptSection = document.querySelector(".receipt-section");
                 if (receiptSection) {
                     receiptSection.innerHTML = `<p style="text-align:center; color:red;">Please log in to create a receipt.</p>`;
                 }
             }
-
-            // Hide withdraw button if not admin
-            if (user?.isAdmin !== true) {
-                const withdrawBtn = document.querySelector(".withdraw-btn");
-                if (withdrawBtn) withdrawBtn.style.display = "none";
-            }
-
-            // Add logout link
-            const nav = document.querySelector(".nav-links ul");
-            if (token && nav) {
-                const logoutLi = document.createElement("li");
-                logoutLi.innerHTML = `<a href="#" onclick="logout()">LOGOUT</a>`;
-                nav.appendChild(logoutLi);
-            }
         });
-
-        function logout() {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            alert("Logged out successfully.");
-            location.reload();
-        }
     </script>
+
+
+
 
 </body>
 

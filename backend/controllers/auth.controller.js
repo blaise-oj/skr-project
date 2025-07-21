@@ -1,13 +1,13 @@
 import Admin from "../models/admin.model.js";
 import User from "../models/user.model.js";
-import crypto from "crypto";
-import nodemailer from "nodemailer";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import crypto from "crypto"; // For generating secure tokens
+import nodemailer from "nodemailer"; // For sending email
+import bcrypt from "bcryptjs"; // For password hashing
+import jwt from "jsonwebtoken";// For generating login tokens
 
 const SECRET = "skr-admin-secret"; // Put in .env in production
 
-// Email transporter setup (shared for all emails)
+// Shared transporter using Gmail (credentials from .env
 const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: {
@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Email templates
+// Reusable HTML templates for verification and password reset emails
 const emailTemplates = {
   verification: (verifyUrl) => `
     <div style="font-family:sans-serif; text-align:center;">
@@ -42,7 +42,7 @@ const emailTemplates = {
   `
 };
 
-// Shared email sender
+// Wraps nodemailer sendMail in a try/catch
 const sendEmail = async (to, subject, html) => {
   try {
     await transporter.sendMail({
@@ -57,8 +57,14 @@ const sendEmail = async (to, subject, html) => {
   }
 };
 
-// Controllers
+
 export const registerUser = async (req, res) => {
+  // 1. Check for duplicate email
+  // 2. Hash password
+  // 3. Create user with verification token
+  // 4. Save to DB
+  // 5. Send verification email
+
   try {
     const { username, email, password } = req.body;
 
@@ -98,6 +104,9 @@ export const registerUser = async (req, res) => {
 };
 
 export const verifyEmail = async (req, res) => {
+  // 1. Find user by token (not expired)
+  // 2. Mark user as verified
+  // 3. Clear token fields
   const { token } = req.query;
 
   if (!token) {
@@ -132,6 +141,10 @@ export const verifyEmail = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
+  // 1. Find user by username
+  // 2. Check password
+  // 3. Ensure user is verified
+  // 4. Generate and return JWT token
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
@@ -158,6 +171,11 @@ export const loginUser = async (req, res) => {
 };
 
 export const forgotPassword = async (req, res) => {
+  // 1. Find user by email
+  // 2. Generate reset token and expiry
+  // 3. Save to DB
+  // 4. Send reset email
+  // Always return success to avoid leaking email existence
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
@@ -187,6 +205,9 @@ export const forgotPassword = async (req, res) => {
 };
 
 export const resetPassword = async (req, res) => {
+  // 1. Find user by reset token (and check not expired)
+  // 2. Hash and update password
+  // 3. Clear reset fields
   try {
     const { token, newPassword } = req.body;
     const user = await User.findOne({
@@ -217,6 +238,9 @@ export const resetPassword = async (req, res) => {
 
 // auth.controller.js
 export const registerAdmin = async (req, res) => {
+  // 1. Validate password
+  // 2. Hash password
+  // 3. Create and save new admin user
   try {
     const { username, password, email } = req.body;
 
@@ -244,6 +268,10 @@ export const registerAdmin = async (req, res) => {
 
 
 export const loginAdmin = async (req, res) => {
+  // 1. Try to find by Admin model
+  // 2. If not found, fall back to User model
+  // 3. Check password
+  // 4. Return JWT with isAdmin flag
   const { username, password } = req.body;
 
   // First check Admins
