@@ -75,7 +75,7 @@ const AddReceipt = () => {
     // Search by track code
     const searchReceipt = async () => {
         try {
-            const token = localStorage.getItem("userToken"); // or "adminToken", whichever you use
+            const token = localStorage.getItem("adminToken"); // or "adminToken", whichever you use
             const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/track/${trackCode}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
