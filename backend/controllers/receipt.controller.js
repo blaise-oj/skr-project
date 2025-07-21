@@ -53,12 +53,16 @@ const createReceipt = async (req, res) => {
     const { name, quantity, weight, client, notificationMethod } = req.body;
     const trackingId = generateTrackingId();
 
+    // Get the admin ID from the token (assumed to be extracted by verifyAdmin middleware)
+    const createdBy = req.user.id; // or req.user._id depending on how it's stored in the token
+
     const newReceipt = new receipt({
       name,
       quantity,
       weight,
       trackingId,
-      client
+      client,
+      createdBy // <-- assign the admin ID here
     });
 
     await newReceipt.save();
@@ -129,7 +133,6 @@ const createReceipt = async (req, res) => {
       } else {
         console.log("✅ SMS sent successfully to", phone);
       }
-
     }
 
     res.status(201).json({
@@ -146,24 +149,28 @@ const createReceipt = async (req, res) => {
 
 
 
+
 // Search by Tracking ID (renamed from searchByTrackCode)
 const searchByTrackingId = async (req, res) => {
   try {
     const { trackingId } = req.params;
-    const userEmail = req.user.email;
-    const isAdmin = req.user.isAdmin;
+    const userEmail = req.user?.email;      // Optional chaining in case no user
+    const isAdmin = req.user?.isAdmin;
 
     const foundReceipt = await receipt.findOne({ trackingId });
+
     if (!foundReceipt) {
       return res.status(404).json({ message: "Receipt not found" });
     }
 
-    // Only check email match if NOT admin
+    // ✅ If the requester is NOT admin, restrict to own receipt only
     if (!isAdmin && foundReceipt.client?.email !== userEmail) {
       return res.status(403).json({ message: "You are not authorized to view this receipt." });
     }
 
+    // ✅ If admin or authorized user, return it
     res.status(200).json(foundReceipt);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

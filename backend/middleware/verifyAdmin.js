@@ -1,6 +1,7 @@
 // middleware/verifyAdmin.js
 import jwt from "jsonwebtoken";
-const SECRET = "skr-admin-secret";
+
+const SECRET = process.env.JWT_SECRET;
 
 export const verifyAdmin = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -17,7 +18,7 @@ export const verifyAdmin = (req, res, next) => {
       return res.status(403).json({ message: "Forbidden: Not an admin" });
     }
 
-    req.user = decoded;
+    req.user = decoded; // contains id, isAdmin, email, etc.
     next();
   } catch (err) {
     return res.status(401).json({ message: "Unauthorized: Invalid token" });
