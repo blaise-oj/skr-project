@@ -1,56 +1,24 @@
 import Admin from "../models/admin.model.js";
 import User from "../models/user.model.js";
-import crypto from "crypto"; // for generating random verification tokens
-import nodemailer from "nodemailer"; // for sending the verification email
+import crypto from "crypto";
+import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const SECRET = "skr-admin-secret"; // Put in .env in production
 
-export const registerUser = async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
+// Email transporter setup (shared for all emails)
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
-    // Check if email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already in use" });
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString("hex");
-
-    // Create new user (unverified)
-    const user = new User({
-      username,
-      email,
-      password: hashedPassword,
-      isVerified: false,
-      verificationToken,
-    });
-
-    await user.save();
-
-    // Send verification email
-    const transporter = nodemailer.createTransport({
-      service: "Gmail", // or use your email provider (e.g., Mailgun, Outlook)
-      auth: {
-        user: process.env.EMAIL_USER, // stored in your .env file
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    const verifyUrl = `${process.env.BACKEND_URL}/api/auth/verify-email?token=${verificationToken}`;
-
-
-
-    await transporter.sendMail({
-      to: email,
-      subject: "Verify Your Email - Gordon Security Company",
-      html: `
+// Email templates
+const emailTemplates = {
+  verification: (verifyUrl) => `
     <div style="font-family:sans-serif; text-align:center;">
       <h2>Verify Your Email - Gordon Security</h2>
       <p>Click below to verify your email:</p>
@@ -58,20 +26,77 @@ export const registerUser = async (req, res) => {
          style="display:inline-block; padding:10px 20px; background:#007bff; color:white; border-radius:5px; text-decoration:none;">
          Verify Email
       </a>
-      <p>If you didn’t request this, ignore this email.</p>
+      <p>If you didn't request this, ignore this email.</p>
     </div>
   `,
+  passwordReset: (resetUrl) => `
+    <div style="font-family:sans-serif; text-align:center;">
+      <h2>Password Reset Request</h2>
+      <p>You requested to reset your password. Click below to continue:</p>
+      <a href="${resetUrl}" 
+         style="display:inline-block; padding:10px 20px; background:#007bff; color:white; border-radius:5px; text-decoration:none;">
+         Reset Password
+      </a>
+      <p>This link expires in 1 hour. If you didn't request this, please ignore this email.</p>
+    </div>
+  `
+};
+
+// Shared email sender
+const sendEmail = async (to, subject, html) => {
+  try {
+    await transporter.sendMail({
+      from: '"Gordon Security" <no-reply@gordonsecurity.com>',
+      to,
+      subject,
+      html
     });
+  } catch (err) {
+    console.error("Email sending error:", err);
+    throw new Error("Failed to send email");
+  }
+};
+
+// Controllers
+export const registerUser = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    // Check if email exists
+    if (await User.findOne({ email })) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    // Create user
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const user = new User({
+      username,
+      email,
+      password: await bcrypt.hash(password, 10),
+      isVerified: false,
+      verificationToken,
+      verificationTokenExpires: Date.now() + 86400000 // 24 hours
+    });
+
+    await user.save();
+
+    // Send verification email
+    const verifyUrl = `${process.env.BACKEND_URL}/api/auth/verify-email?token=${verificationToken}`;
+    await sendEmail(
+      email,
+      "Verify Your Email - Gordon Security Company",
+      emailTemplates.verification(verifyUrl)
+    );
 
     res.status(201).json({
       message: "User registered. Please check your email to verify your account.",
     });
   } catch (err) {
-    console.error(err);
+    console.error("Registration error:", err);
     res.status(500).json({ message: "Server error: " + err.message });
   }
 };
-// POST /api/auth/verify-email
+
 export const verifyEmail = async (req, res) => {
   const { token } = req.query;
 
@@ -80,14 +105,18 @@ export const verifyEmail = async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ verificationToken: token });
+    const user = await User.findOne({ 
+      verificationToken: token,
+      verificationTokenExpires: { $gt: Date.now() }
+    });
 
-    if (!user || user.isVerified) {
-      return res.send(`<h2>Email already verified or invalid link</h2>`);
+    if (!user) {
+      return res.send(`<h2>Invalid or expired verification link</h2>`);
     }
 
     user.isVerified = true;
     user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
     await user.save();
 
     return res.send(`
@@ -97,100 +126,69 @@ export const verifyEmail = async (req, res) => {
       </div>
     `);
   } catch (err) {
-    console.error(err);
+    console.error("Verification error:", err);
     return res.send(`<h2>Error verifying email</h2>`);
   }
 };
 
-
 export const loginUser = async (req, res) => {
-  const { username, password } = req.body;
+  try {
+    const { username, password } = req.body;
+    const user = await User.findOne({ username });
 
-  const user = await User.findOne({ username });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ message: "Invalid credentials" });
-  }
-
-  if (!user.isVerified) {
-    return res.status(403).json({ message: "Please verify your email first." });
-  }
-
-  const token = jwt.sign(
-    { id: user._id, username: user.username, isAdmin: false },
-    SECRET,
-    { expiresIn: "1d" }
-  );
-
-  res.json({
-    token,
-    user: {
-      username: user.username
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: "Invalid credentials" });
     }
-  });
+
+    if (!user.isVerified) {
+      return res.status(403).json({ message: "Please verify your email first." });
+    }
+
+    const token = jwt.sign(
+      { id: user._id, username: user.username, isAdmin: false },
+      SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.json({ token, user: { username: user.username } });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-// Forgot Password - Generate and send reset token
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-    
-    // Find user by email
     const user = await User.findOne({ email });
-    if (!user) {
-      // Don't reveal if user doesn't exist for security
-      return res.status(200).json({ 
-        message: "If this email exists, a reset link has been sent" 
-      });
+    
+    if (user) {
+      const resetToken = crypto.randomBytes(32).toString("hex");
+      user.resetPasswordToken = resetToken;
+      user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+      await user.save();
+      
+      const resetUrl = `${process.env.FRONTEND_URL}/reset-password.html?token=${resetToken}`;
+      await sendEmail(
+        user.email,
+        "Password Reset - Gordon Security Company",
+        emailTemplates.passwordReset(resetUrl)
+      );
     }
-    
-    // Generate reset token (expires in 1 hour)
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-    await user.save();
-    
-    // Send email with reset link
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password.html?token=${resetToken}`;
-    
-    const transporter = nodemailer.createTransport({
-      service: "Gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-    
-    await transporter.sendMail({
-      to: user.email,
-      subject: "Password Reset - Gordon Security Company",
-      html: `
-        <div style="font-family:sans-serif; text-align:center;">
-          <h2>Password Reset Request</h2>
-          <p>You requested to reset your password. Click below to continue:</p>
-          <a href="${resetUrl}" 
-             style="display:inline-block; padding:10px 20px; background:#007bff; color:white; border-radius:5px; text-decoration:none;">
-             Reset Password
-          </a>
-          <p>This link expires in 1 hour. If you didn't request this, please ignore this email.</p>
-        </div>
-      `,
-    });
-    
+
+    // Always return success to prevent email enumeration
     res.status(200).json({ 
       message: "If this email exists, a reset link has been sent" 
     });
   } catch (err) {
-    console.error(err);
+    console.error("Forgot password error:", err);
     res.status(500).json({ message: "Error processing request" });
   }
 };
 
-// Reset Password - Verify token and update password
 export const resetPassword = async (req, res) => {
   try {
     const { token, newPassword } = req.body;
-    
-    // Find user by token and check expiration
     const user = await User.findOne({
       resetPasswordToken: token,
       resetPasswordExpires: { $gt: Date.now() }
@@ -202,11 +200,7 @@ export const resetPassword = async (req, res) => {
       });
     }
     
-    // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    
-    // Update password and clear token
-    user.password = hashedPassword;
+    user.password = await bcrypt.hash(newPassword, 10);
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();
@@ -215,7 +209,7 @@ export const resetPassword = async (req, res) => {
       message: "Password updated successfully. You can now login with your new password." 
     });
   } catch (err) {
-    console.error(err);
+    console.error("Reset password error:", err);
     res.status(500).json({ message: "Error resetting password" });
   }
 };
