@@ -115,57 +115,12 @@ const Edit = () => {
 
       {receipt && (
         <div className="edit-form">
-          <input
-            type="text"
-            name="name"
-            value={receipt.name}
-            onChange={handleChange}
-            placeholder="Item Name"
-          />
-          <input
-            type="number"
-            name="quantity"
-            value={receipt.quantity}
-            onChange={handleChange}
-            placeholder="Quantity"
-          />
-          <input
-            type="number"
-            name="weight"
-            value={receipt.weight}
-            onChange={handleChange}
-            placeholder="Weight (kg)"
-          />
-          <input
-            type="text"
-            name="status"
-            value={receipt.status}
-            onChange={handleChange}
-            placeholder="Status (e.g., deposited)"
-          />
-
-          <h4>Client Info</h4>
-          <input
-            type="text"
-            name="name"
-            value={receipt.client?.name || ''}
-            onChange={handleClientChange}
-            placeholder="Client Name"
-          />
-          <input
-            type="tel"
-            name="phone"
-            value={receipt.client?.phone || ''}
-            onChange={handleClientChange}
-            placeholder="Phone"
-          />
-          <input
-            type="email"
-            name="email"
-            value={receipt.client?.email || ''}
-            onChange={handleClientChange}
-            placeholder="Email"
-          />
+          <input type="text" name="name" value={receipt.name} onChange={handleChange} placeholder="Item Name" />
+          <input type="number" name="quantity" value={receipt.quantity} onChange={handleChange} placeholder="Quantity" />
+          <input type="number" name="weight" value={receipt.weight} onChange={handleChange} placeholder="Weight (kg)" />
+          <input type="text" name="name" value={receipt.client?.name || ''} onChange={handleClientChange} placeholder="Client Name" />
+          <input type="tel" name="phone" value={receipt.client?.phone || ''} onChange={handleClientChange} placeholder="Phone" />
+          <input type="email" name="email" value={receipt.client?.email || ''} onChange={handleClientChange} placeholder="Email" />
 
           <button onClick={handleUpdate}>Save Changes</button>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
