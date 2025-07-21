@@ -3,16 +3,18 @@ import { useParams, useNavigate } from "react-router-dom";
 import './Edit.css';
 
 const Edit = () => {
-  const { trackingId } = useParams();
+  const { trackingId: initialTrackingId } = useParams();
   const navigate = useNavigate();
+  const [trackingId, setTrackingId] = useState(initialTrackingId || '');
   const [receipt, setReceipt] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const handleSearch = async () => {
+  const fetchReceipt = async (id) => {
+    setLoading(true);
     try {
-      const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/track/${trackingId}`);
+      const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/track/${id}`);
       if (!res.ok) throw new Error('Receipt not found');
       const data = await res.json();
       setReceipt(data);
@@ -21,6 +23,20 @@ const Edit = () => {
     } catch (err) {
       setReceipt(null);
       setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (trackingId) {
+      fetchReceipt(trackingId);
+    }
+  }, [trackingId]);
+
+  const handleSearch = () => {
+    if (trackingId.trim() !== '') {
+      fetchReceipt(trackingId.trim());
     }
   };
 
@@ -28,19 +44,22 @@ const Edit = () => {
     if (!window.confirm("Are you sure you want to delete this receipt?")) return;
 
     try {
+      const token = localStorage.getItem("adminToken");
       const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/${receipt._id}`, {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
       });
 
       const data = await res.json();
       alert(data.message || "Receipt deleted");
-      navigate("/list"); // go back to list page after deletion
+      navigate("/list");
     } catch (err) {
       console.error("Delete failed:", err);
       alert("Failed to delete receipt");
     }
   };
-
 
   const handleChange = (e) => {
     setReceipt({ ...receipt, [e.target.name]: e.target.value });
@@ -55,11 +74,16 @@ const Edit = () => {
 
   const handleUpdate = async () => {
     try {
+      const token = localStorage.getItem("adminToken");
       const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/${receipt._id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(receipt)
       });
+
       if (!res.ok) throw new Error('Failed to update receipt');
       const updated = await res.json();
       setReceipt(updated);
@@ -74,6 +98,7 @@ const Edit = () => {
   return (
     <div className="edit-page">
       <h2>Edit Receipt</h2>
+
       <div className="search-box">
         <input
           type="text"
@@ -84,6 +109,7 @@ const Edit = () => {
         <button onClick={handleSearch}>Search</button>
       </div>
 
+      {loading && <p>Loading...</p>}
       {error && <p className="error-msg">{error}</p>}
       {success && <p className="success-msg">{success}</p>}
 
@@ -92,7 +118,7 @@ const Edit = () => {
           <input type="text" name="name" value={receipt.name} onChange={handleChange} placeholder="Item Name" />
           <input type="number" name="quantity" value={receipt.quantity} onChange={handleChange} placeholder="Quantity" />
           <input type="number" name="weight" value={receipt.weight} onChange={handleChange} placeholder="Weight (kg)" />
-          <input type="text" name="clientName" value={receipt.client?.name || ''} onChange={handleClientChange} placeholder="Client Name" />
+          <input type="text" name="name" value={receipt.client?.name || ''} onChange={handleClientChange} placeholder="Client Name" />
           <input type="tel" name="phone" value={receipt.client?.phone || ''} onChange={handleClientChange} placeholder="Phone" />
           <input type="email" name="email" value={receipt.client?.email || ''} onChange={handleClientChange} placeholder="Email" />
 
@@ -100,8 +126,6 @@ const Edit = () => {
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <button className="delete-btn" onClick={handleDelete}>Delete Receipt</button>
           </div>
-
-
         </div>
       )}
     </div>
