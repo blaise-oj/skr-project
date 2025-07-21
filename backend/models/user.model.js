@@ -5,11 +5,20 @@ const userSchema = new mongoose.Schema({
   email:    { type: String, required: true, unique: true },
   password: { type: String, required: true },
   isVerified: { type: Boolean, default: false },
+
+  // Email verification fields
   verificationToken: { type: String },
   verificationTokenExpires: { type: Date },
+
+  // 🔧 Password reset fields (add these!)
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date }
+
 }, { timestamps: true });
-// Add index for better performance on token searches
+
+// Indexing for faster lookup
 userSchema.index({ verificationToken: 1 });
 userSchema.index({ resetPasswordToken: 1 });
 
 export default mongoose.model("User", userSchema);
+
