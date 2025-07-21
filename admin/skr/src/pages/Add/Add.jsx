@@ -24,47 +24,53 @@ const AddReceipt = () => {
     };
 
     // Submit form
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+   const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        const receiptPayload = {
-            name: formData.name,
-            quantity: parseInt(formData.quantity),
-            weight: parseFloat(formData.weight),
-            image: formData.image,
-            client: {
-                name: formData.clientName,
-                phone: formData.clientPhone,
-                email: formData.clientEmail,
-                identification: formData.identification,
-            },
-        };
+    const token = localStorage.getItem("adminToken");
 
-        try {
-            const response = await fetch("https://skr-project-backend.onrender.com/api/receipt", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(receiptPayload),
-            });
-
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message || "Creation failed");
-
-            setMessage(`✅ Receipt created! Track Code: ${data.trackingId}`);
-            setFormData({
-                name: "",
-                quantity: "",
-                weight: "",
-                image: "",
-                clientName: "",
-                clientPhone: "",
-                clientEmail: "",
-                identification: "",
-            });
-        } catch (err) {
-            setMessage(`❌ ${err.message}`);
-        }
+    const receiptPayload = {
+        name: formData.name,
+        quantity: parseInt(formData.quantity),
+        weight: parseFloat(formData.weight),
+        image: formData.image,
+        client: {
+            name: formData.clientName,
+            phone: formData.clientPhone,
+            email: formData.clientEmail,
+            identification: formData.identification,
+        },
     };
+
+    try {
+        const response = await fetch("https://skr-project-backend.onrender.com/api/receipt", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}` // ✅ Correctly placed inside headers
+            },
+            body: JSON.stringify(receiptPayload),
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Creation failed");
+
+        setMessage(`✅ Receipt created! Track Code: ${data.trackingId}`);
+        setFormData({
+            name: "",
+            quantity: "",
+            weight: "",
+            image: "",
+            clientName: "",
+            clientPhone: "",
+            clientEmail: "",
+            identification: "",
+        });
+    } catch (err) {
+        setMessage(`❌ ${err.message}`);
+    }
+};
+
 
     // Search by track code
     const searchReceipt = async () => {
