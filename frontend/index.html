@@ -178,9 +178,10 @@
                 const username = localStorage.getItem("email");
 
                 if (!token || !username) {
-                    showNotification("Please log in to input the tracking code.", "error");
+                    alert("Please log in to input the tracking code.");
                     return;
                 }
+
 
                 const trackingId = document.getElementById("trackingIdInput").value.trim();
                 const loadingIndicator = document.getElementById("loadingIndicator");
