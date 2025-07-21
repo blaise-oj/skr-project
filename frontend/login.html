@@ -390,6 +390,8 @@ forgotForm.addEventListener("submit", async function(e) {
 
         localStorage.setItem("userToken", data.token);
         localStorage.setItem("username", data.user.username);
+        localStorage.setItem("email", data.user.email);
+
 
         messageDiv.textContent = "✅ Login successful! Redirecting...";
         messageDiv.style.color = "green";
