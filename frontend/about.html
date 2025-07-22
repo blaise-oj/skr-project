@@ -28,7 +28,7 @@
                     <li><a href="service.html">SERVICES</a></li>
                     <li><a href="blog.html">BLOG</a></li>
                     <li><a href="contact.html">CONTACT</a></li>
-                    <li><a href="login.html">LOGIN</a></li>
+                    <li id="auth-link"><a href="login.html">LOGIN</a></li>
                     
                 </ul>
             </div>
@@ -103,6 +103,30 @@
             menuOpen.style.display = "block";
             menuClose.style.display = "none";
         }
+    </script>
+    <script>
+        // ✅ Define logout in global scope
+        function logout() {
+            localStorage.removeItem("userToken");
+            localStorage.removeItem("username");
+            alert("You have been logged out.");
+            window.location.href = "about.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("userToken");
+            const username = localStorage.getItem("username");
+            const authLink = document.getElementById("auth-link");
+
+            if (authLink) {
+                if (token) {
+                    authLink.innerHTML = `<a href="#" onclick="logout()">LOGOUT</a>`;
+                } else {
+                    authLink.innerHTML = `<a href="login.html">LOGIN</a>`;
+                }
+            }
+
+        });
     </script>
 
 </body>
