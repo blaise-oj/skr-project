@@ -141,13 +141,11 @@ export const verifyEmail = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  // 1. Find user by username
-  // 2. Check password
-  // 3. Ensure user is verified
-  // 4. Generate and return JWT token
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
+    const { identifier, password } = req.body; // Accept either username or email
+    const user = await User.findOne({
+      $or: [{ username: identifier }, { email: identifier }]
+    });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: "Invalid credentials" });
@@ -161,20 +159,21 @@ export const loginUser = async (req, res) => {
       {
         id: user._id,
         username: user.username,
-        email: user.email,     // ✅ Include the email
+        email: user.email,
         isAdmin: false,
       },
       SECRET,
       { expiresIn: "1d" }
     );
 
-
-    res.json({ token, user: { username: user.username } });
+    // ✅ Return both username and email
+    res.json({ token, user: { username: user.username, email: user.email } });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 export const forgotPassword = async (req, res) => {
   // 1. Find user by email
