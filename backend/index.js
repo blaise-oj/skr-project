@@ -17,18 +17,14 @@ const port = process.env.PORT || 4000;
 
 // ✅ CORS configuration
 const allowedOrigins = [
-  "http://127.0.0.1:5500",
-  "http://localhost:5173",
-  "https://skr-project-frontend.onrender.com",
-  "https://skr-project-admin.onrender.com",
+  "http://127.0.0.1:5500",                    // For HTML frontend running locally
+  "http://localhost:5173",                   // For React frontend running locally (Vite)
+  "https://skr-project-frontend.onrender.com", // Public user site
+  "https://skr-project-admin.onrender.com",    // Admin panel
 ];
 
-// ✅ Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-// ✅ Proper CORS with credentials and headers support
-app.use(cors({
+// ✅ CORS middleware
+const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -38,7 +34,12 @@ app.use(cors({
   },
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
-}));
+};
+
+// ✅ Middleware
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // ✅ Routes
 app.use("/api/receipt", receiptRoutes);
