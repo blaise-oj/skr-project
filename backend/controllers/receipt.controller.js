@@ -19,7 +19,7 @@ const sms = africastalkingInstance.SMS;
 
 
 
-//get all receipts
+//get all receipts(admin use)
 const getReceipts = async (req, res) => {
   try {
     const Receipts = await receipt.find({});
@@ -29,7 +29,7 @@ const getReceipts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }
-//get a receipt
+// Get single receipt by ID (used internally, not for tracking)
 const getReceipt = async (req, res) => {
   try {
     const { id } = req.params;
@@ -42,12 +42,12 @@ const getReceipt = async (req, res) => {
 };
 
 
-// Helper to generate random tracking code
+// Generate unique tracking ID for each receipt
 const generateTrackingId = () => {
   return crypto.randomBytes(4).toString("hex").toUpperCase(); // 8 characters
 };
 
-// POST /api/receipt
+//  Create a receipt (admin-only)
 const createReceipt = async (req, res) => {
   try {
     const { name, quantity, weight, client, notificationMethod } = req.body;
@@ -62,11 +62,12 @@ const createReceipt = async (req, res) => {
       weight,
       trackingId,
       client,
-      createdBy // <-- assign the admin ID here
+      createdBy // <-- assigns the admin ID here
     });
 
     await newReceipt.save();
 
+    //Validate notification method input
     const notifyType = notificationMethod === "sms" ? "sms" : "email";
 
     // Validation based on selected notification method
@@ -79,7 +80,7 @@ const createReceipt = async (req, res) => {
     }
 
     if (notifyType === "email") {
-      // === EMAIL NOTIFICATION ===
+      // === EMAIL NOTIFICATION with tracking code ===
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -105,7 +106,7 @@ const createReceipt = async (req, res) => {
       console.log("✅ Email sent successfully.");
 
     } else if (notifyType === "sms") {
-      // === SMS NOTIFICATION ===
+      // === SMS NOTIFICATION with tracking id===
       let phone = client.phone.trim();
 
       if (phone.startsWith("0")) {
@@ -163,12 +164,12 @@ const searchByTrackingId = async (req, res) => {
       return res.status(404).json({ message: "Receipt not found" });
     }
 
-    // ✅ If the requester is NOT admin, restrict to own receipt only
+    // If the requester is NOT admin, restrict to own receipt only
     if (!isAdmin && foundReceipt.client?.email !== userEmail) {
       return res.status(403).json({ message: "You are not authorized to view this receipt." });
     }
 
-    // ✅ If admin or authorized user, return it
+    // If admin or authorized user, return it
     res.status(200).json(foundReceipt);
 
   } catch (error) {

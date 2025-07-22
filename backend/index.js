@@ -15,7 +15,7 @@ import commentRoutes from "./routes/comment.routes.js";
 const app = express();
 const port = process.env.PORT || 4000;
 
-// ✅ CORS configuration
+// CORS configuration
 const allowedOrigins = [
   "http://127.0.0.1:5500",                    // For HTML frontend running locally
   "http://localhost:5173",                   // For React frontend running locally (Vite)
@@ -23,7 +23,7 @@ const allowedOrigins = [
   "https://skr-project-admin.onrender.com",    // Admin panel
 ];
 
-// ✅ CORS middleware
+// CORS middleware
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -36,12 +36,12 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-// ✅ Middleware
+// Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// ✅ Routes
+// Routes
 app.use("/api/receipt", receiptRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
@@ -52,7 +52,7 @@ app.get("/", (req, res) => {
   res.json({ status: "OK", message: "Gordon Security API is running" });
 });
 
-// ✅ Start DB and server
+// Start DB and server
 connectDB().then(() => {
   app.listen(port, () => {
     console.log(`Server started on http://localhost:${port}`);

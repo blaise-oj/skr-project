@@ -4,7 +4,7 @@ const adminSchema = new mongoose.Schema({
   username: { 
     type: String, 
     required: true,
-    // Remove unique: true here to allow duplicates in frontend
+    //  unique: true here removed to allow duplicates in frontend
   },
   password: { type: String, required: true },
   // Added new field to distinguish admin vs regular users
@@ -15,7 +15,7 @@ const adminSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-// Add compound unique index ONLY for admin users
+// Added compound unique index ONLY for admin users
 adminSchema.index(
   { username: 1, isAdmin: 1 }, 
   { unique: true, partialFilterExpression: { isAdmin: true } }

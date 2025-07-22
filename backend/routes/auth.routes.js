@@ -8,7 +8,7 @@ import {
   forgotPassword,  
   resetPassword
 } from "../controllers/auth.controller.js";
-import { verifyAdmin } from "../middleware/verifyAdmin.js"; // New middleware
+import { verifyAdmin } from "../middleware/verifyAdmin.js"; // New middleware for admin verification
 import User from "../models/user.model.js"; // Import User model for email verification
 
 

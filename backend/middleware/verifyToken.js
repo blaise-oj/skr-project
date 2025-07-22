@@ -9,9 +9,9 @@ export const verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "skr-admin-secret");
 
-    // ✅ decoded should include email and isAdmin
+    // decoded should include email and isAdmin
     req.user = decoded;
-    // console.log("Decoded token:", decoded); // Uncomment for debugging
+    // console.log("Decoded token:", decoded); // Uncomment for debugging later
 
     next();
   } catch (err) {

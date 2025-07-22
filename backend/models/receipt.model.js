@@ -47,7 +47,7 @@ const receiptSchema = mongoose.Schema(
       identification: String,
     },
 
-    // ✅ This line correctly tracks who created the receipt
+    // This line correctly tracks who created the receipt with a reference to the Admin model
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Admin",

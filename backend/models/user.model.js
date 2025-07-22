@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   verificationToken: { type: String },
   verificationTokenExpires: { type: Date },
 
-  // 🔧 Password reset fields (add these!)
+  // Password reset fields 
   resetPasswordToken: { type: String },
   resetPasswordExpires: { type: Date }
 

@@ -5,9 +5,9 @@ import nodemailer from "nodemailer"; // For sending email
 import bcrypt from "bcryptjs"; // For password hashing
 import jwt from "jsonwebtoken";// For generating login tokens
 
-const SECRET = "skr-admin-secret"; // Put in .env in production
+const SECRET = "skr-admin-secret"; // move to .env for production use
 
-// Shared transporter using Gmail (credentials from .env
+// Email transporter using Gmail (credentials from .env)   
 const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: {
@@ -41,8 +41,7 @@ const emailTemplates = {
     </div>
   `
 };
-
-// Wraps nodemailer sendMail in a try/catch
+// Sends an email using nodemailer
 const sendEmail = async (to, subject, html) => {
   try {
     await transporter.sendMail({
@@ -59,22 +58,18 @@ const sendEmail = async (to, subject, html) => {
 
 
 export const registerUser = async (req, res) => {
-  // 1. Check for duplicate email
-  // 2. Hash password
-  // 3. Create user with verification token
-  // 4. Save to DB
-  // 5. Send verification email
 
   try {
     const { username, email, password } = req.body;
 
-    // Check if email exists
+     // 1. Reject duplicate emails
     if (await User.findOne({ email })) {
       return res.status(400).json({ message: "Email already in use" });
     }
 
-    // Create user
+    // 2. Create verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
+    // 3. Create user record (unverified initially)
     const user = new User({
       username,
       email,
@@ -86,7 +81,7 @@ export const registerUser = async (req, res) => {
 
     await user.save();
 
-    // Send verification email
+    // 4. Send verification email with token link
     const verifyUrl = `${process.env.BACKEND_URL}/api/auth/verify-email?token=${verificationToken}`;
     await sendEmail(
       email,
@@ -102,11 +97,9 @@ export const registerUser = async (req, res) => {
     res.status(500).json({ message: "Server error: " + err.message });
   }
 };
-
+// Verifies email using token from query params
 export const verifyEmail = async (req, res) => {
-  // 1. Find user by token (not expired)
-  // 2. Mark user as verified
-  // 3. Clear token fields
+  
   const { token } = req.query;
 
   if (!token) {
@@ -114,6 +107,7 @@ export const verifyEmail = async (req, res) => {
   }
 
   try {
+     // 1. Find unexpired token
     const user = await User.findOne({
       verificationToken: token,
       verificationTokenExpires: { $gt: Date.now() }
@@ -122,7 +116,7 @@ export const verifyEmail = async (req, res) => {
     if (!user) {
       return res.send(`<h2>Invalid or expired verification link</h2>`);
     }
-
+    // 2. Mark user as verified
     user.isVerified = true;
     user.verificationToken = undefined;
     user.verificationTokenExpires = undefined;
@@ -139,22 +133,23 @@ export const verifyEmail = async (req, res) => {
     return res.send(`<h2>Error verifying email</h2>`);
   }
 };
-
+// Login for users (requires verified email)
 export const loginUser = async (req, res) => {
   try {
     const { identifier, password } = req.body; // Accept either username or email
+    // Accept username or email as login identifier
     const user = await User.findOne({
       $or: [{ username: identifier }, { email: identifier }]
     });
-
+    // 1. Validate user and password
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-
+    // 2. Ensure email is verified
     if (!user.isVerified) {
       return res.status(403).json({ message: "Please verify your email first." });
     }
-
+    // 3. Issue JWT token
     const token = jwt.sign(
       {
         id: user._id,
@@ -174,23 +169,19 @@ export const loginUser = async (req, res) => {
   }
 };
 
-
+// Request password reset link (even if email doesn't exist, don't reveal that)
 export const forgotPassword = async (req, res) => {
-  // 1. Find user by email
-  // 2. Generate reset token and expiry
-  // 3. Save to DB
-  // 4. Send reset email
-  // Always return success to avoid leaking email existence
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
-
+    // 1. Generate token and expiry
     if (user) {
       const resetToken = crypto.randomBytes(32).toString("hex");
       user.resetPasswordToken = resetToken;
       user.resetPasswordExpires = Date.now() + 3600000 * 24; // 24 hours
       await user.save();
-
+      
+      // 2. Send reset link
       const resetUrl = `${process.env.FRONTEND_URL}/reset-password.html?token=${resetToken}`;
       await sendEmail(
         user.email,

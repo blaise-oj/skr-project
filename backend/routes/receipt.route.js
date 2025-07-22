@@ -18,10 +18,10 @@ import { verifyAdmin } from "../middleware/verifyAdmin.js";
 
 const router = express.Router();
 
-// 🟢 Route order matters!
+// Route only for admin to get all receipts
 router.get("/", getReceipts);
 
-// ✅ Place this before "/:id"
+//this is before "/:id" to avoid conflicts with the ID route
 router.get("/track/:trackingId", verifyToken, searchByTrackingId);
 router.get("/track/:trackingId/qrcode", generateQRCode);
 router.get("/:trackingId/pdf", generateReceiptPDF);
