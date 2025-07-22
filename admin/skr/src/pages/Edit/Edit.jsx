@@ -14,7 +14,7 @@ const Edit = () => {
   const fetchReceipt = async (id) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("userToken"); // Make sure the token is stored
+      const token = localStorage.getItem("adminToken"); // Make sure the token is stored
 
       const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/track/${id}`, {
         method: 'GET',
