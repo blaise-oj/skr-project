@@ -6,23 +6,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>User Login - Gordon Security</title>
 
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;600;700&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <style>
     .login-section {
       background: rgba(255, 255, 255, 0.95);
-      padding: 40px 30px;
-      max-width: 500px;
-      margin: 60px auto;
+      padding: 25px 20px;
+      /* Reduced padding */
+      max-width: 280px;
+      /* Smaller width */
+      margin: 40px auto;
+      /* Less vertical space */
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+      /* Slightly softer shadow */
       font-family: "Poppins", sans-serif;
     }
+
 
     .login-section h2 {
       text-align: center;
@@ -248,17 +253,23 @@
 
   <!-- FOOTER -->
   <section class="footer">
-    <h4>About Us</h4>
-    <p>We believe in maintaining our heritage by employing high calibre staff and a management<br> that is dynamic to
-      changes in the environment and security industry, thus providing value for money to our clients.</p>
-    <div class="icons">
-      <i class="fa fa-facebook"></i>
-      <i class="fa fa-twitter"></i>
-      <i class="fa fa-instagram"></i>
-      <i class="fa fa-linkedin"></i>
-      <i class="fa fa-whatsapp"></i>
-    </div>
-  </section>
+        <h4>About Us</h4>
+        <p> We believe in maintaining our heritage by employing high calibre staff and a management <br>that is dynamic
+            to changes in the environment and security industry, thus providing value for money to our clients. </p>
+        <div class="icons">
+            <a href="https://facebook.com" target="_blank" title="Join Us on Facebook"><i
+                    class="fa fa-facebook"></i></a>
+            <a href="https://twitter.com" target="_blank" title="Join Us on Twitter"><i class="fa fa-twitter"></i></a>
+            <a href="https://linkedin.com" target="_blank" title="Join our Linkedin account"><i
+                    class="fa fa-linkedin"></i></a>
+            <a href="https://wa.me/254715293884" target="_blank" title="Chat on WhatsApp"><i
+                    class="fa fa-whatsapp"></i></a>
+            <a href="mailto:info@gordonsecurity.com" title="Send us an Email"><i class="fa fa-envelope"></i></a>
+        </div>
+
+
+
+    </section>
 
   <!-- NAV TOGGLE SCRIPT -->
   <script>
@@ -360,53 +371,53 @@
       }
     });
     // Handle login form submission
-  document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("login-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("login-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-      const identifier = document.getElementById("identifier").value.trim();
-      const password = document.getElementById("password").value;
-      const messageDiv = document.getElementById("login-message");
-      const spinner = document.getElementById("spinner");
+        const identifier = document.getElementById("identifier").value.trim();
+        const password = document.getElementById("password").value;
+        const messageDiv = document.getElementById("login-message");
+        const spinner = document.getElementById("spinner");
 
-      messageDiv.textContent = ""; // Clear message on new submit
-      spinner.style.display = "inline-block";
+        messageDiv.textContent = ""; // Clear message on new submit
+        spinner.style.display = "inline-block";
 
-      try {
-        const response = await fetch("https://skr-project-backend.onrender.com/api/auth/user-login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ identifier, password }),
-        });
+        try {
+          const response = await fetch("https://skr-project-backend.onrender.com/api/auth/user-login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ identifier, password }),
+          });
 
-        const data = await response.json();
+          const data = await response.json();
 
-        if (!response.ok) {
-          messageDiv.textContent = data.message || "Login failed.";
+          if (!response.ok) {
+            messageDiv.textContent = data.message || "Login failed.";
+            messageDiv.style.color = "red";
+            spinner.style.display = "none";
+            return;
+          }
+
+          localStorage.setItem("userToken", data.token);
+          localStorage.setItem("username", data.user.username);
+          localStorage.setItem("email", data.user.email);
+
+          messageDiv.textContent = "✅ Login successful! Redirecting...";
+          messageDiv.style.color = "green";
+
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1500);
+        } catch (err) {
+          console.error(err);
+          messageDiv.textContent = "❌ Network error. Try again.";
           messageDiv.style.color = "red";
+        } finally {
           spinner.style.display = "none";
-          return;
         }
-
-        localStorage.setItem("userToken", data.token);
-        localStorage.setItem("username", data.user.username);
-        localStorage.setItem("email", data.user.email);
-
-        messageDiv.textContent = "✅ Login successful! Redirecting...";
-        messageDiv.style.color = "green";
-
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 1500);
-      } catch (err) {
-        console.error(err);
-        messageDiv.textContent = "❌ Network error. Try again.";
-        messageDiv.style.color = "red";
-      } finally {
-        spinner.style.display = "none";
-      }
+      });
     });
-  });
   </script>
 
 </body>
