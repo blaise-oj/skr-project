@@ -12,33 +12,32 @@ const Edit = () => {
   const [loading, setLoading] = useState(false);
 
   const fetchReceipt = async (id) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/track/${id}`);
-      if (!res.ok) throw new Error('Receipt not found');
-      const data = await res.json();
-      setReceipt(data);
-      setError('');
-      setSuccess('');
-    } catch (err) {
-      setReceipt(null);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const token = localStorage.getItem("userToken"); // Make sure the token is stored
 
-  useEffect(() => {
-    if (trackingId) {
-      fetchReceipt(trackingId);
-    }
-  }, [trackingId]);
+    const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/track/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Send token here
+      },
+      credentials: 'include' // Important for cross-origin cookies (if any)
+    });
 
-  const handleSearch = () => {
-    if (trackingId.trim() !== '') {
-      fetchReceipt(trackingId.trim());
-    }
-  };
+    if (!res.ok) throw new Error('Receipt not found');
+    const data = await res.json();
+    setReceipt(data);
+    setError('');
+    setSuccess('');
+  } catch (err) {
+    setReceipt(null);
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this receipt?")) return;

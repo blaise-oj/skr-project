@@ -17,17 +17,17 @@ const port = process.env.PORT || 4000;
 
 // ✅ CORS configuration
 const allowedOrigins = [
-  "http://127.0.0.1:5500", // Local frontend
-  "http://localhost:5173", // Admin panel local
-  "https://skr-project-frontend.onrender.com", // Public frontend
-  "https://skr-project-admin.onrender.com", // Admin panel deployed
+  "http://127.0.0.1:5500",
+  "http://localhost:5173",
+  "https://skr-project-frontend.onrender.com",
+  "https://skr-project-admin.onrender.com",
 ];
 
 // ✅ Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// ✅ Proper CORS middleware — place BEFORE routes
+// ✅ Proper CORS with credentials and headers support
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -36,7 +36,8 @@ app.use(cors({
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
 // ✅ Routes
@@ -45,11 +46,12 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/comments", commentRoutes);
 
+// Health check
 app.get("/", (req, res) => {
   res.json({ status: "OK", message: "Gordon Security API is running" });
 });
 
-// ✅ DB and server start
+// ✅ Start DB and server
 connectDB().then(() => {
   app.listen(port, () => {
     console.log(`Server started on http://localhost:${port}`);
