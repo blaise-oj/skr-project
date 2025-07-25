@@ -32,10 +32,11 @@
 
         <!-- Navigation-->
         <nav>
-            <a href="index.html" class="logo-container">
+            <div class="logo-container">
                 <img src="images/logo.png" alt="Gordon Security Logo" class="logo">
                 <span class="logo-text">Gordon Security<br>Company</span>
-            </a>
+            </div>
+
             <div class="nav-links" id="navLinks">
                 <i class="fa fa-times" id="menuClose" onClick="hiddenMenu()"></i>
                 <ul>
@@ -44,13 +45,13 @@
                     <li><a href="service.html">SERVICES</a></li>
                     <li><a href="blog.html">BLOG</a></li>
                     <li><a href="contact.html">CONTACT</a></li>
-                    <li id="auth-link"><a href="login.html">LOGIN</a></li> <!-- This will change dynamically -->
-
-
+                    <li id="auth-link"><a href="login.html">LOGIN</a></li>
                 </ul>
             </div>
-            <i class="fa fa-bars " id="menuOpen" onClick="showMenu()"></i>
+
+            <i class="fa fa-bars" id="menuOpen" onClick="showMenu()"></i>
         </nav>
+
 
         <!--content container (important for spacing) -->
         <div class="content-container">
@@ -102,12 +103,29 @@
             navLinks.style.right = "0";
             menuOpen.style.display = "none";
             menuClose.style.display = "block";
+
+            // Enable outside click detection
+            document.addEventListener("click", outsideClickListener);
         }
 
         function hiddenMenu() {
             navLinks.style.right = "-200px";
             menuOpen.style.display = "block";
             menuClose.style.display = "none";
+
+            // Remove outside click detection
+            document.removeEventListener("click", outsideClickListener);
+        }
+
+        function outsideClickListener(event) {
+            // If the click is NOT inside navLinks or the menu buttons
+            if (
+                !navLinks.contains(event.target) &&
+                event.target !== menuOpen &&
+                event.target !== menuClose
+            ) {
+                hiddenMenu();
+            }
         }
     </script>
 
@@ -284,12 +302,39 @@
 
     <section>
         <script>
-            function downloadPDF() {
-                const trackingId = document.getElementById("trackingIdInput").value;
-                if (!trackingId) return alert("Enter a tracking ID first.");
-                window.open(`https://skr-project-backend.onrender.com/api/receipt/${trackingId}/pdf`, "_blank");
+            async function downloadPDF() {
+                const trackingId = document.getElementById("trackingIdInput").value.trim();
+                if (!trackingId) {
+                    alert("Enter a tracking ID first.");
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`https://skr-project-backend.onrender.com/api/receipt/${trackingId}/pdf`);
+
+                    if (!response.ok) {
+                        const data = await response.json();
+                        alert(data.message || "Receipt not found.");
+                        return;
+                    }
+
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = `receipt-${trackingId}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    window.URL.revokeObjectURL(url);
+
+                } catch (error) {
+                    console.error("Error downloading PDF:", error);
+                    alert("Something went wrong. Try again later.");
+                }
             }
-        </script>>
+        </script>
+
 
 
     </section>
@@ -409,7 +454,7 @@
             <p>
                 Welcome to Gordon Security Services. We operate a national network coordinated by our state-of-the-art
                 control centre in Nairobi.<br><br>
-                With branches in Nairobi, Mombasa, and Kisumu, our core values are Innovation, Ethics, and
+                With the main location in Nairobi, our core values are Innovation, Ethics, and
                 Trust.<br><br>
                 We provide integrated security solutions including Access Control, CCTV, Fire, and Intruder Alarm
                 systems.<br><br>
