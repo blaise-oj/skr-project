@@ -264,12 +264,20 @@ nav a {
     #menuClose {
         display: none;
     }
+
     .logo-text {
-    font-size: 24px;
-    line-height: 1.2;
-    margin-left: 0px;
-    white-space: nowrap; /* Prevents wrapping if needed */
-  }
+        font-size: 24px;
+        line-height: 1.2;
+        margin-left: 0px;
+        white-space: nowrap;
+        /* Prevents wrapping if needed */
+    }
+
+    .logo-container {
+        gap: 25px;
+        /* Reduced gap between logo image and text */
+    }
+
 
 }
 
@@ -1075,7 +1083,8 @@ h3 {
     text-align: left;
 }
 
-.comment-form input, .comment-form textarea {
+.comment-form input,
+.comment-form textarea {
     width: 100%;
     padding: 10px;
     margin: 15px 0;
@@ -1085,9 +1094,11 @@ h3 {
     background: #f0f0f0;
 
 }
-.comment-form button{
+
+.comment-form button {
     margin: 10px 0;
 }
+
 @media(max-width:700px) {
     .sub-header h1 {
         font-size: 24px;
