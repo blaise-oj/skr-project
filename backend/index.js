@@ -21,6 +21,9 @@ const allowedOrigins = [
   "http://localhost:5173",                   // For React frontend running locally (Vite)
   "https://skr-project-frontend.onrender.com", // Public user site
   "https://skr-project-admin.onrender.com",    // Admin panel
+  "https://gordonsecurities.com",                // frontend domain
+  "https://www.gordonsecurities.com",            // frontend with www
+  "https://admin.gordonsecurities.com",          // admin panel domain
 ];
 
 // CORS middleware

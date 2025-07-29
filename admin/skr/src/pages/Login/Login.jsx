@@ -131,15 +131,7 @@ const Login = () => {
             )}
           </div>
 
-          <div className="form-options">
-            <div className="remember-me">
-              <input type="checkbox" id="remember" />
-              <label htmlFor="remember">Remember me</label>
-            </div>
-            <Link to="/forgot-password" className="forgot-password">
-              Forgot password?
-            </Link>
-          </div>
+      
 
           <button type="submit" disabled={loading} className="auth-button">
             {loading ? "Logging in..." : "Login"}
