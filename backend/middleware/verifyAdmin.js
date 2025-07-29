@@ -7,7 +7,7 @@ export const verifyAdmin = (req, res, next) => {
 
   // Check if token is present and properly formatted
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized: No token provided" });
+    return res.status(401).json({ message: "Unauthorized" });
   }
 
   const token = authHeader.split(" ")[1];
@@ -24,6 +24,6 @@ export const verifyAdmin = (req, res, next) => {
     req.user = decoded; // contains id, isAdmin, email, etc.
     next();// Proceed to the protected route
   } catch (err) {
-    return res.status(401).json({ message: "Unauthorized: Invalid token" });
+    return res.status(401).json({ message: "Unauthorized" });
   }
 };
