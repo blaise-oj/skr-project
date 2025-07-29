@@ -7,14 +7,17 @@ import jwt from "jsonwebtoken";// For generating login tokens
 
 const SECRET = "skr-admin-secret"; // move to .env for production use
 
-// Email transporter using Gmail (credentials from .env)   
+// Email transporter using Email (credentials from .env)   
 const transporter = nodemailer.createTransport({
-  service: "Gmail",
+  host: "smtp.zoho.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
+
 
 // Reusable HTML templates for verification and password reset emails
 const emailTemplates = {
@@ -45,7 +48,7 @@ const emailTemplates = {
 const sendEmail = async (to, subject, html) => {
   try {
     await transporter.sendMail({
-      from: '"Gordon Security" <no-reply@gordonsecurity.com>',
+      from: '"Gordon Security" <info@gordonsecurities.com>',
       to,
       subject,
       html
