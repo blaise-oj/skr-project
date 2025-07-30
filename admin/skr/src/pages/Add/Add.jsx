@@ -16,6 +16,7 @@ const AddReceipt = () => {
     const [message, setMessage] = useState("");
     const [trackCode, setTrackCode] = useState("");
     const [searchedReceipt, setSearchedReceipt] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     // Form input handler
     const handleChange = (e) => {
@@ -26,6 +27,7 @@ const AddReceipt = () => {
     // Submit form
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true); // Start loading
 
         const token = localStorage.getItem("adminToken");
 
@@ -47,7 +49,7 @@ const AddReceipt = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}` // ✅ Correctly placed inside headers
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(receiptPayload),
             });
@@ -68,8 +70,11 @@ const AddReceipt = () => {
             });
         } catch (err) {
             setMessage(`❌ ${err.message}`);
+        } finally {
+            setLoading(false); // Stop loading
         }
     };
+
 
 
     // Search by track code
@@ -145,7 +150,11 @@ const AddReceipt = () => {
                 <label>Identification (optional)</label>
                 <input type="text" name="identification" value={formData.identification} onChange={handleChange} />
 
-                <button type="submit">Create Receipt</button>
+                <button type="submit" disabled={loading}>
+                    {loading ? "Creating..." : "Create Receipt"}
+                </button>
+
+                {loading && <div className="spinner"></div>}  {/* Spinner shows while loading */}
             </form>
 
             {message && <p className="message">{message}</p>}
