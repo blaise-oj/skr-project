@@ -82,15 +82,18 @@ const createReceipt = async (req, res) => {
     if (notifyType === "email") {
       // === EMAIL NOTIFICATION with tracking code ===
       const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: "smtp.zoho.com",
+        port: 465,
+        secure: true,
         auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
+          user: process.env.EMAIL_USER, // should be 'info@gordonsecurities.com'
+          pass: process.env.EMAIL_PASS  // Zoho app password
         }
       });
 
+
       const mailOptions = {
-        from: '"Gordon Security" <no-reply@gordonsecurity.com>',
+        from: `"Gordon Security" <${process.env.EMAIL_USER}>`,
         to: client.email,
         subject: "Your Storage Receipt Tracking Code",
         html: `
@@ -325,15 +328,18 @@ const markAsWithdrawn = async (req, res) => {
     // === EMAIL Notification ===
     if (notificationMethod === "email") {
       const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: "smtp.zoho.com",       // ✅ Zoho's SMTP server
+        port: 465,                   // ✅ Secure port
+        secure: true,                // ✅ True for port 465
         auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
+          user: process.env.EMAIL_USER, // ✅ info@gordonsecurities.com
+          pass: process.env.EMAIL_PASS  // ✅ Zoho app password
         }
       });
 
+
       const mailOptions = {
-        from: '"Gordon Security" <info@gordonsecurity.com>',
+        from: `"Gordon Security" <${process.env.EMAIL_USER}>`,
         to: client.email,
         subject: "Your Item Has Been Withdrawn",
         html: `

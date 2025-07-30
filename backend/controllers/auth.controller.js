@@ -48,7 +48,7 @@ const emailTemplates = {
 const sendEmail = async (to, subject, html) => {
   try {
     await transporter.sendMail({
-      from: '"Gordon Security" <info@gordonsecurities.com>',
+      from: `"Gordon Security" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html
