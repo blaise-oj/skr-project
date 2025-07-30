@@ -10,6 +10,7 @@ import receiptRoutes from "./routes/receipt.route.js";
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import commentRoutes from "./routes/comment.routes.js";
+import testRoutes from "./routes/test.routes.js";
 
 // App config
 const app = express();
@@ -43,6 +44,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use("/api/test", testRoutes);
 
 // Routes
 app.use("/api/receipt", receiptRoutes);
