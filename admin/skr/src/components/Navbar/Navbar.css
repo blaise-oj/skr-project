@@ -117,3 +117,31 @@
 .dropdown-item:hover {
   background-color: #f0f0f0;
 }
+@media (max-width: 480px) {
+  .brand-title {
+    font-size: 1rem;
+  }
+
+  .admin-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .logout-btn,
+  .login-btn {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .dropdown-item {
+    font-size: 0.85rem;
+  }
+
+  .btn-icon {
+    font-size: 0.9rem;
+  }
+  .profile {
+    width: 32px;
+    height: 32px;
+  }
+}
+

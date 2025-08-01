@@ -16,3 +16,24 @@
   padding: 0.5rem 1rem;
   cursor: pointer;
 }
+@media (max-width: 480px) {
+  .edit-chooser {
+    padding: 1rem;
+  }
+
+  .edit-chooser h2 {
+    font-size: 1.25rem;
+  }
+
+  .edit-chooser form {
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .edit-chooser input,
+  .edit-chooser button {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+}

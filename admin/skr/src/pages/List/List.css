@@ -155,3 +155,50 @@
   overflow-x: auto;
   display: block;
 }
+@media (max-width: 480px) {
+  .list {
+    padding: 1rem;
+  }
+
+  .search-input {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 6px;
+  }
+
+  .filter-toggles {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .filter-toggles label {
+    font-size: 14px;
+    width: 100%;
+  }
+
+  .list-table th,
+  .list-table td {
+    font-size: 0.85rem;
+    padding: 6px;
+  }
+
+  .edit-btn,
+  .withdraw-btn,
+  .download-btn-deposit,
+  .download-btn-withdraw {
+    font-size: 0.8rem;
+    padding: 4px 6px;
+  }
+
+  .modal-content {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .modal-buttons button {
+    margin: 5px 5px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+}

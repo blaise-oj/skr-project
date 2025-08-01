@@ -142,21 +142,63 @@
 /* Responsive */
 @media (max-width: 480px) {
   .add-page {
-    padding: 1rem;
+    padding: 0.75rem 0.5rem;
+    margin: 1rem auto;
+    max-width: 95vw;
+    border-radius: 8px;
+    box-shadow: none;
+  }
+
+  .add-page h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .add-form {
+    gap: 0.75rem;
   }
 
   .add-form input,
   .track-search input {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.65rem;
   }
 
   .add-form button,
   .track-search button {
-    font-size: 0.95rem;
-    padding: 0.6rem;
+    font-size: 0.9rem;
+    padding: 0.55rem;
+    width: 100%;
+  }
+
+  .track-search {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .weight-display-wrapper input {
     padding-right: 2rem;
+  }
+
+  .weight-display-wrapper .unit-suffix {
+    right: 10px;
+    font-size: 0.85rem;
+  }
+
+  .receipt-details {
+    font-size: 0.85rem;
+    padding: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .message {
+    font-size: 0.9rem;
+  }
+
+  .spinner {
+    width: 28px;
+    height: 28px;
+    border-width: 3px;
   }
 }

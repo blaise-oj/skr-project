@@ -31,8 +31,9 @@
 }
 @media (max-width: 480px) {
   .auth-card {
-    padding: 20px;
-    margin: 0 15px;
+    padding: 15px;
+    margin: 0 10px;
+    transform: translate(-50%, -50%) scale(0.80);
   }
 }
 
