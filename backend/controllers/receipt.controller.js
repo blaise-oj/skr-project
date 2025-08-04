@@ -329,12 +329,12 @@ const markAsWithdrawn = async (req, res) => {
     // === EMAIL Notification ===
     if (notificationMethod === "email") {
       const transporter = nodemailer.createTransport({
-        host: "smtp.zoho.com",       // ✅ Zoho's SMTP server
-        port: 465,                   // ✅ Secure port
-        secure: true,                // ✅ True for port 465
+        host: "mail.privateemail.com",       //  SMTP server
+        port: 465,                   // Secure port
+        secure: true,                //True for port 465
         auth: {
-          user: process.env.EMAIL_USER, // ✅ info@gordonsecurities.com
-          pass: process.env.EMAIL_PASS  // ✅ Zoho app password
+          user: process.env.EMAIL_USER, //info@gordonsecurities.com
+          pass: process.env.EMAIL_PASS  //Zoho app password
         }
       });
 
