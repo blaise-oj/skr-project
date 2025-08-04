@@ -9,14 +9,15 @@ const SECRET = "skr-admin-secret"; // move to .env for production use
 
 // Email transporter using Email (credentials from .env)   
 const transporter = nodemailer.createTransport({
-  host: "smtp.zoho.com",
-  port: 465,
-  secure: true,
+  host: "mail.privateemail.com",     // Namecheap SMTP host
+  port: 465,                         // Secure SMTP port
+  secure: true,                      // true for port 465
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
+
 
 
 // Reusable HTML templates for verification and password reset emails
@@ -65,7 +66,7 @@ export const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-     // 1. Reject duplicate emails
+    // 1. Reject duplicate emails
     if (await User.findOne({ email })) {
       return res.status(400).json({ message: "Email already in use" });
     }
@@ -102,7 +103,7 @@ export const registerUser = async (req, res) => {
 };
 // Verifies email using token from query params
 export const verifyEmail = async (req, res) => {
-  
+
   const { token } = req.query;
 
   if (!token) {
@@ -110,7 +111,7 @@ export const verifyEmail = async (req, res) => {
   }
 
   try {
-     // 1. Find unexpired token
+    // 1. Find unexpired token
     const user = await User.findOne({
       verificationToken: token,
       verificationTokenExpires: { $gt: Date.now() }
@@ -183,7 +184,7 @@ export const forgotPassword = async (req, res) => {
       user.resetPasswordToken = resetToken;
       user.resetPasswordExpires = Date.now() + 3600000 * 24; // 24 hours
       await user.save();
-      
+
       // 2. Send reset link
       const resetUrl = `${process.env.FRONTEND_URL}/reset-password.html?token=${resetToken}`;
       await sendEmail(

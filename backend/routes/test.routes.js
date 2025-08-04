@@ -8,28 +8,29 @@ const router = express.Router();
 router.post("/send-test", async (req, res) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.zoho.com",
-      port: 465,
-      secure: true, // true for port 465, false for 587
+      host: "mail.privateemail.com",   // Namecheap SMTP host
+      port: 465,                        // Secure port
+      secure: true,                    // Use SSL
       auth: {
-        user: process.env.EMAIL_USER, // your Zoho email address
-        pass: process.env.EMAIL_PASS  // your Zoho app password
+        user: process.env.EMAIL_USER, // info@gordonsecurities.com
+        pass: process.env.EMAIL_PASS  // Password or app password
       },
     });
 
     const mailOptions = {
       from: `"Gordon Security" <${process.env.EMAIL_USER}>`,
-      to: "info@gordonsecurities.com", // Replace with your real test email
-      subject: "Test Email from Gordon Security",
-      text: "This is a test email to verify Zoho Mail configuration.",
+      to: "info@gordonsecurities.com",  // Test email to yourself
+      subject: "Test Email from Gordon Security via Namecheap",
+      text: "✅ This is a test email sent using Namecheap Private Email SMTP.",
     };
 
     await transporter.sendMail(mailOptions);
-    res.json({ success: true, message: "Test email sent using Zoho!" });
+    res.json({ success: true, message: "Test email sent using Namecheap SMTP!" });
   } catch (error) {
-    console.error("Zoho mail error:", error);
-    res.status(500).json({ success: false, error: "Failed to send email using Zoho" });
+    console.error("Namecheap mail error:", error);
+    res.status(500).json({ success: false, error: "Failed to send email using Namecheap" });
   }
 });
 
 export default router;
+
