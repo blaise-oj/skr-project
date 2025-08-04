@@ -82,14 +82,15 @@ const createReceipt = async (req, res) => {
     if (notifyType === "email") {
       // === EMAIL NOTIFICATION with tracking code ===
       const transporter = nodemailer.createTransport({
-        host: "smtp.zoho.com",
-        port: 465,
-        secure: true,
+        host: "mail.privateemail.com",     // Namecheap SMTP host
+        port: 465,                         // Secure SMTP port
+        secure: true,                      // true for port 465
         auth: {
-          user: process.env.EMAIL_USER, // should be 'info@gordonsecurities.com'
-          pass: process.env.EMAIL_PASS  // Zoho app password
-        }
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
       });
+
 
 
       const mailOptions = {
