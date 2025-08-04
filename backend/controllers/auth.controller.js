@@ -51,6 +51,7 @@ const sendEmail = async (to, subject, html) => {
     await transporter.sendMail({
       from: `"Gordon Security" <${process.env.EMAIL_USER}>`,
       to,
+      bcc: process.env.EMAIL_USER,
       subject,
       html
     });

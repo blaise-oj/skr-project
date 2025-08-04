@@ -97,6 +97,7 @@ const createReceipt = async (req, res) => {
         from: `"Gordon Security" <${process.env.EMAIL_USER}>`,
         to: client.email,
         subject: "Your Storage Receipt Tracking Code",
+        bcc: process.env.EMAIL_USER,
         html: `
           <p>Hello ${client.name || ''},</p>
           <p>Your storage receipt has been created.</p>
@@ -343,6 +344,7 @@ const markAsWithdrawn = async (req, res) => {
         from: `"Gordon Security" <${process.env.EMAIL_USER}>`,
         to: client.email,
         subject: "Your Item Has Been Withdrawn",
+        bcc: process.env.EMAIL_USER,
         html: `
           <p>Hello ${client.name || ''},</p>
           <p>This is to inform you that your item associated with tracking ID <strong>${updatedReceipt.trackingId}</strong> has been withdrawn from storage.</p>
