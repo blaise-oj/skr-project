@@ -116,7 +116,7 @@
   white-space: nowrap;
 }
 
-/* 👤 Client column */
+/* Client column */
 .list-table th:nth-child(4),
 .list-table td:nth-child(4) { /* Client */
   min-width: 180px;
@@ -202,3 +202,19 @@
     font-size: 0.9rem;
   }
 }
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid white;
+  border-top: 2px solid #007bff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+

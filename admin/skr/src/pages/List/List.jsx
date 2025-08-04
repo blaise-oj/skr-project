@@ -8,6 +8,9 @@ const List = () => {
   const [showOnlyWithdrawn, setShowOnlyWithdrawn] = useState(false);
   const [showOnlyDeposited, setShowOnlyDeposited] = useState(false);
 
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+
+
 
   const [receipts, setReceipts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,6 +65,10 @@ const List = () => {
       return;
     }
 
+    if (isWithdrawing) return;
+
+    setIsWithdrawing(true);
+
     try {
       const res = await fetch(`https://skr-project-backend.onrender.com/api/receipt/${selectedTrackingId}/withdraw`, {
         method: "PATCH",
@@ -82,9 +89,11 @@ const List = () => {
       console.error("Withdraw error:", err);
       alert("Failed to withdraw receipt.");
     } finally {
+      setIsWithdrawing(false);
       setShowModal(false);
     }
   };
+
 
   const downloadPDF = (trackingId) => {
     window.open(`https://skr-project-backend.onrender.com/api/receipt/${trackingId}/pdf`, "_blank");
@@ -184,7 +193,7 @@ const List = () => {
                 <td>{r.withdrawalDate ? formatDate(r.withdrawalDate) : "-"}</td>
                 <td>
                   <button className="edit-btn" onClick={() => handleEdit(r)}>Edit</button>
-                  
+
                   <button className="download-btn-deposit" onClick={() => downloadPDF(r.trackingId)}>
                     Download Deposited Receipt
                   </button>
@@ -220,7 +229,21 @@ const List = () => {
             </select>
 
             <div className="modal-buttons">
-              <button onClick={confirmWithdraw}>Confirm Withdraw</button>
+              <button
+                onClick={confirmWithdraw}
+                disabled={isWithdrawing}
+                style={{
+                  opacity: isWithdrawing ? 0.6 : 1,
+                  cursor: isWithdrawing ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {isWithdrawing ? (
+                  <span className="spinner"></span>
+                ) : (
+                  "Confirm Withdraw"
+                )}
+              </button>
+
               <button onClick={() => setShowModal(false)}>Cancel</button>
             </div>
           </div>
