@@ -90,7 +90,7 @@ export const registerUser = async (req, res) => {
     const verifyUrl = `${process.env.BACKEND_URL}/api/auth/verify-email?token=${verificationToken}`;
     await sendEmail(
       email,
-      "Verify Your Email - Gordon Security Company",
+      "Check an Email sent to you and click the verify button to Verify Your Email  - Gordon Security Company",
       emailTemplates.verification(verifyUrl)
     );
 
