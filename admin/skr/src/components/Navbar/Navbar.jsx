@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import './Navbar.css';
 import { assets } from '../../assets/assets';
+import logo from '../../assets/logos.png';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Navbar = () => {
   return (
     <div className="navbar">
       <div className="navbar-left">
-        <img className="logo" src={assets.logo} alt="Logo" />
+        <img src={logo} alt="Logo" className="logo" />
         <div className="brand-text">
           <span className="brand-title">Gordon Security</span>
           <span className="admin-subtitle">Admin Panel</span>

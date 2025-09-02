@@ -90,7 +90,7 @@ export const registerUser = async (req, res) => {
     const verifyUrl = `${process.env.BACKEND_URL}/api/auth/verify-email?token=${verificationToken}`;
     await sendEmail(
       email,
-      "Check an Email sent to you and click the verify button to Verify Your Email  - Gordon Security Company",
+      "Verify Your Email - Gordon Security Company",
       emailTemplates.verification(verifyUrl)
     );
 
@@ -152,7 +152,7 @@ export const loginUser = async (req, res) => {
     }
     // 2. Ensure email is verified
     if (!user.isVerified) {
-      return res.status(403).json({ message: "Please verify your email first." });
+      return res.status(403).json({ message: "Please check an email sent to you and click the link to verify its you then login. Thankyou ." });
     }
     // 3. Issue JWT token
     const token = jwt.sign(
