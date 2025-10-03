@@ -9,8 +9,8 @@ const SECRET = "skr-admin-secret"; // move to .env for production use
 
 // Email transporter using Email (credentials from .env)   
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,     // Namecheap SMTP host
-  port: process.env.EMAIL_PORT,                         // Secure SMTP port
+  host: "mail.privateemail.com",     // Namecheap SMTP host
+  port: 465,                         // Secure SMTP port
   secure: true,                      // true for port 465
   auth: {
     user: process.env.EMAIL_USER,
