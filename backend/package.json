@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@getbrevo/brevo": "^3.0.1",
     "africastalking": "^0.7.3",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",

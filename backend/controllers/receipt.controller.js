@@ -4,9 +4,9 @@ import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import fs from "fs";
 import QRCode from "qrcode";
 import axios from "axios";
-import nodemailer from "nodemailer"
-import crypto from "crypto"
+import crypto from "crypto";
 import africastalking from "africastalking";
+import Brevo from "@getbrevo/brevo";
 
 // Initializing Africa's Talking
 const africastalkingInstance = africastalking({
@@ -16,31 +16,41 @@ const africastalkingInstance = africastalking({
 
 const sms = africastalkingInstance.SMS;
 
+// 🔹 Brevo setup
+const brevo = new Brevo.TransactionalEmailsApi();
+brevo.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
+const sendBrevoEmail = async (to, subject, html) => {
+  const email = {
+    sender: { name: "Gordon Security", email: "info@gordonsecurities.com" },
+    to: [{ email: to }],
+    subject,
+    htmlContent: html,
+  };
 
+  return brevo.sendTransacEmail(email);
+};
 
 //get all receipts(admin use)
 const getReceipts = async (req, res) => {
   try {
     const Receipts = await receipt.find({});
     res.status(200).json(Receipts);
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
+
 // Get single receipt by ID (used internally, not for tracking)
 const getReceipt = async (req, res) => {
   try {
     const { id } = req.params;
     const Receipt = await receipt.findById(id);
     res.status(200).json(Receipt);
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // Generate unique tracking ID for each receipt
 const generateTrackingId = () => {
@@ -53,8 +63,7 @@ const createReceipt = async (req, res) => {
     const { name, quantity, weight, client, notificationMethod } = req.body;
     const trackingId = generateTrackingId();
 
-    // Get the admin ID from the token (assumed to be extracted by verifyAdmin middleware)
-    const createdBy = req.user.id; // or req.user._id depending on how it's stored in the token
+    const createdBy = req.user.id;
 
     const newReceipt = new receipt({
       name,
@@ -62,15 +71,13 @@ const createReceipt = async (req, res) => {
       weight,
       trackingId,
       client,
-      createdBy // <-- assigns the admin ID here
+      createdBy
     });
 
     await newReceipt.save();
 
-    //Validate notification method input
     const notifyType = notificationMethod === "sms" ? "sms" : "email";
 
-    // Validation based on selected notification method
     if (notifyType === "email" && !client?.email) {
       return res.status(400).json({ message: "Client email is required for email notification" });
     }
@@ -80,38 +87,19 @@ const createReceipt = async (req, res) => {
     }
 
     if (notifyType === "email") {
-      // === EMAIL NOTIFICATION with tracking code ===
-      const transporter = nodemailer.createTransport({
-        host: "mail.privateemail.com",     // Namecheap SMTP host
-        port: 465,                         // Secure SMTP port
-        secure: true,                      // true for port 465
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
-
-
-
-      const mailOptions = {
-        from: `"Gordon Security" <${process.env.EMAIL_USER}>`,
-        to: client.email,
-        subject: "Your Storage Receipt Tracking Code",
-        bcc: process.env.EMAIL_USER,
-        html: `
+      await sendBrevoEmail(
+        client.email,
+        "Your Storage Receipt Tracking Code",
+        `
           <p>Hello ${client.name || ''},</p>
           <p>Your storage receipt has been created.</p>
           <p><strong>Tracking ID:</strong> ${trackingId}</p>
           <p>You can use this code to track your receipt on our website.</p>
           <p>Thank you,<br>Gordon Security</p>
         `
-      };
-
-      await transporter.sendMail(mailOptions);
-      console.log("✅ Email sent successfully.");
-
+      );
+      console.log("✅ Email sent successfully via Brevo.");
     } else if (notifyType === "sms") {
-      // === SMS NOTIFICATION with tracking id===
       let phone = client.phone.trim();
 
       if (phone.startsWith("0")) {
@@ -152,15 +140,11 @@ const createReceipt = async (req, res) => {
   }
 };
 
-
-
-
-
-// Search by Tracking ID (renamed from searchByTrackCode)
+// Search by Tracking ID
 const searchByTrackingId = async (req, res) => {
   try {
     const { trackingId } = req.params;
-    const userEmail = req.user?.email;      // Optional chaining in case no user
+    const userEmail = req.user?.email;
     const isAdmin = req.user?.isAdmin;
 
     const foundReceipt = await receipt.findOne({ trackingId });
@@ -169,12 +153,10 @@ const searchByTrackingId = async (req, res) => {
       return res.status(404).json({ message: "Receipt not found" });
     }
 
-    // If the requester is NOT admin, restrict to own receipt only
     if (!isAdmin && foundReceipt.client?.email !== userEmail) {
       return res.status(403).json({ message: "You are not authorized to view this receipt." });
     }
 
-    // If admin or authorized user, return it
     res.status(200).json(foundReceipt);
 
   } catch (error) {
@@ -182,11 +164,7 @@ const searchByTrackingId = async (req, res) => {
   }
 };
 
-
-
-
 // PDF export function
-
 export const generateReceiptPDF = async (req, res) => {
   const { trackingId } = req.params;
 
@@ -197,11 +175,9 @@ export const generateReceiptPDF = async (req, res) => {
       return res.status(404).json({ message: "Receipt not found" });
     }
 
-    // Generate QR code from trackingId
     const qrImageUrl = await QRCode.toDataURL(receiptData.trackingId);
     const qrImageBytes = Buffer.from(qrImageUrl.split(",")[1], "base64");
 
-    // Create PDF
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([600, 400]);
 
@@ -254,13 +230,11 @@ export const generateReceiptPDF = async (req, res) => {
     page.drawText(`Deposit Date: ${new Date(receiptData.depositDate).toLocaleString('en-KE')}`, { x: 50, y: currentY, size: 12, font });
     currentY -= 20;
 
-    // Added withdrawal date only if it exists
     if (receiptData.withdrawalDate) {
       page.drawText(`Withdrawal Date: ${new Date(receiptData.withdrawalDate).toLocaleString('en-KE')}`, { x: 50, y: currentY, size: 12, font });
       currentY -= 20;
     }
 
-    // Embed QR code
     const qrImage = await pdfDoc.embedPng(qrImageBytes);
     const qrDims = qrImage.scale(0.5);
 
@@ -294,11 +268,10 @@ export const generateQRCode = async (req, res) => {
 };
 
 //mark a receipt as withdrawn
-
 const markAsWithdrawn = async (req, res) => {
   try {
     const { trackingId } = req.params;
-    const { notificationMethod } = req.body; // <-- allow admin to choose sms or email
+    const { notificationMethod } = req.body;
 
     const updatedReceipt = await receipt.findOneAndUpdate(
       { trackingId },
@@ -318,7 +291,6 @@ const markAsWithdrawn = async (req, res) => {
 
     const client = updatedReceipt.client;
 
-    // Validate contact info
     if (notificationMethod === "email" && !client?.email) {
       return res.status(400).json({ message: "Client email is missing" });
     }
@@ -327,37 +299,19 @@ const markAsWithdrawn = async (req, res) => {
       return res.status(400).json({ message: "Client phone is missing" });
     }
 
-    // === EMAIL Notification ===
     if (notificationMethod === "email") {
-      const transporter = nodemailer.createTransport({
-        host: "mail.privateemail.com",       //  SMTP server
-        port: 465,                   // Secure port
-        secure: true,                //True for port 465
-        auth: {
-          user: process.env.EMAIL_USER, //info@gordonsecurities.com
-          pass: process.env.EMAIL_PASS  //Zoho app password
-        }
-      });
-
-
-      const mailOptions = {
-        from: `"Gordon Security" <${process.env.EMAIL_USER}>`,
-        to: client.email,
-        subject: "Your Item Has Been Withdrawn",
-        bcc: process.env.EMAIL_USER,
-        html: `
+      await sendBrevoEmail(
+        client.email,
+        "Your Item Has Been Withdrawn",
+        `
           <p>Hello ${client.name || ''},</p>
           <p>This is to inform you that your item associated with tracking ID <strong>${updatedReceipt.trackingId}</strong> has been withdrawn from storage.</p>
           <p>Withdrawal Date: ${new Date(updatedReceipt.withdrawalDate).toLocaleString('en-KE')}</p>
           <p>Status: <strong>${updatedReceipt.status}</strong></p>
           <p>Thank you,<br>Gordon Security</p>
         `
-      };
-
-      await transporter.sendMail(mailOptions);
-      console.log("✅ Withdrawal email sent to client.");
-
-      // === SMS Notification ===
+      );
+      console.log("✅ Withdrawal email sent via Brevo.");
     } else if (notificationMethod === "sms") {
       let phone = client.phone.trim();
       if (phone.startsWith("0")) {
@@ -396,11 +350,7 @@ const markAsWithdrawn = async (req, res) => {
   }
 };
 
-
-
-
 //update a receipt
-
 const updateReceipt = async (req, res) => {
   try {
     const { id } = req.params;
@@ -415,7 +365,6 @@ const updateReceipt = async (req, res) => {
 };
 
 //delete a receipt
-
 const deleteReceipt = async (req, res) => {
   try {
     const { id } = req.params;
@@ -430,6 +379,5 @@ const deleteReceipt = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 export { getReceipts, getReceipt, createReceipt, markAsWithdrawn, deleteReceipt, searchByTrackingId, updateReceipt };
