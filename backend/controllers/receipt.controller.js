@@ -83,8 +83,8 @@ const createReceipt = async (req, res) => {
       // === EMAIL NOTIFICATION with tracking code ===
       const transporter = nodemailer.createTransport({
         host: "mail.privateemail.com",     // Namecheap SMTP host
-        port: 465,                         // Secure SMTP port
-        secure: true,                      // true for port 465
+        port: 587,                         // Secure SMTP port
+        secure: false,                      // true for port 465
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,
