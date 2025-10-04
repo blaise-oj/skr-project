@@ -202,15 +202,16 @@ export const generateReceiptPDF = async (req, res) => {
 
     // ✅ Create PDF with A4 size
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
+    const page = pdfDoc.addPage([595.28, 841.89]); // A4
     const { height, width } = page.getSize();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    // ✅ Company Logo
-    const logoBytes = fs.readFileSync("../uploads/logos.png"); // your logo file
+    // ✅ Company Logo (absolute path safe handling)
+    const logoPath = path.resolve("uploads", "logos.png");
+    const logoBytes = fs.readFileSync(logoPath);
     const logoImage = await pdfDoc.embedPng(logoBytes);
-    const logoDims = logoImage.scale(0.18); // adjust size
+    const logoDims = logoImage.scale(0.18);
     page.drawImage(logoImage, {
       x: 50,
       y: height - 100,
@@ -227,7 +228,7 @@ export const generateReceiptPDF = async (req, res) => {
       color: rgb(0.1, 0.3, 0.6),
     });
 
-    // ✅ Header - Slogan / Description
+    // ✅ Slogan
     page.drawText("Trusted Cargo & Security Solutions", {
       x: 200,
       y: height - 80,
@@ -236,14 +237,17 @@ export const generateReceiptPDF = async (req, res) => {
       color: rgb(0.2, 0.2, 0.2),
     });
 
-    // ✅ Company Contact Info (letterhead style)
-    page.drawText("Head Office: Nairobi, Kenya | Tel: +254 715 293 884 | Email: info@gordonsecurities.com", {
-      x: 50,
-      y: height - 120,
-      size: 10,
-      font,
-      color: rgb(0.3, 0.3, 0.3),
-    });
+    // ✅ Contact Info
+    page.drawText(
+      "Head Office: Nairobi, Kenya | Tel: +254 715 293 884 | Email: info@gordonsecurities.com",
+      {
+        x: 50,
+        y: height - 120,
+        size: 10,
+        font,
+        color: rgb(0.3, 0.3, 0.3),
+      }
+    );
 
     // ✅ Section Title
     page.drawText(`Receipt for Tracking ID: ${receiptData.trackingId}`, {
@@ -254,7 +258,7 @@ export const generateReceiptPDF = async (req, res) => {
       color: rgb(0, 0, 0),
     });
 
-    // ✅ Helper function for EAT timezone
+    // ✅ Format dates in East Africa Time
     const formatDate = (date) => {
       return new Date(date).toLocaleString("en-KE", {
         timeZone: "Africa/Nairobi",
@@ -269,7 +273,7 @@ export const generateReceiptPDF = async (req, res) => {
     // --- Table Setup ---
     let tableTop = height - 200;
     let tableLeft = 50;
-    let tableRight = width - 50;
+    let tableRight = width - 200;
     let rowHeight = 28;
     let colLabelWidth = 160;
 
@@ -289,7 +293,7 @@ export const generateReceiptPDF = async (req, res) => {
       rows.push(["Withdrawal Date", formatDate(receiptData.withdrawalDate)]);
     }
 
-    // --- Draw Table Border ---
+    // --- Table Border ---
     page.drawRectangle({
       x: tableLeft,
       y: tableTop - rowHeight * rows.length,
@@ -299,9 +303,10 @@ export const generateReceiptPDF = async (req, res) => {
       borderWidth: 1,
     });
 
-    // --- Draw Rows ---
+    // --- Table Rows ---
     let y = tableTop;
     rows.forEach(([label, value]) => {
+      // horizontal line
       page.drawLine({
         start: { x: tableLeft, y: y - rowHeight },
         end: { x: tableRight, y: y - rowHeight },
@@ -309,6 +314,7 @@ export const generateReceiptPDF = async (req, res) => {
         color: rgb(0.8, 0.8, 0.8),
       });
 
+      // vertical line
       page.drawLine({
         start: { x: tableLeft + colLabelWidth, y },
         end: { x: tableLeft + colLabelWidth, y: y - rowHeight },
@@ -333,39 +339,38 @@ export const generateReceiptPDF = async (req, res) => {
       y -= rowHeight;
     });
 
-    // --- QR Code ---
+    // ✅ QR Code (bottom-right corner)
     const qrImage = await pdfDoc.embedPng(qrImageBytes);
-    const qrDims = qrImage.scale(0.7);
     page.drawImage(qrImage, {
-      x: width - qrDims.width - 80,
-      y: 100,
-      width: qrDims.width,
-      height: qrDims.height,
+      x: width - 130,
+      y: 80,
+      width: 100,
+      height: 100,
     });
 
-    // --- Footer ---
-    page.drawText("© Gordon Security Company - All Rights Reserved", {
+    // ✅ Footer
+    page.drawText("This receipt was system-generated and is valid without a signature.", {
       x: 50,
       y: 50,
-      size: 10,
+      size: 9,
       font,
       color: rgb(0.4, 0.4, 0.4),
     });
 
-    // ✅ Return PDF
+    // ✅ Finalize PDF
     const pdfBytes = await pdfDoc.save();
+
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=receipt_${receiptData.trackingId}.pdf`
+      `inline; filename=receipt_${trackingId}.pdf`
     );
     res.send(Buffer.from(pdfBytes));
   } catch (error) {
-    console.error("PDF error:", error);
+    console.error("❌ PDF Generation Error:", error);
     res.status(500).json({ message: "Failed to generate PDF" });
   }
 };
-
 // --- Generate QR code ---
 export const generateQRCode = async (req, res) => {
   try {
