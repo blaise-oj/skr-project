@@ -97,10 +97,10 @@ const createReceipt = async (req, res) => {
       return res.status(400).json({ message: "Client phone is required" });
 
     // --- Send notification ---
-    if (notificationMethod === "email") {
+    if (notifyType === "email") {
   await sendBrevoEmail(
     client.email,
-    "Your Item Has Been Withdrawn",
+    "Your Storage Receipt Tracking Code",
     `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
       <!-- Header -->
@@ -111,17 +111,17 @@ const createReceipt = async (req, res) => {
       <!-- Body -->
       <div style="padding: 24px; color: #333333; font-size: 15px; line-height: 1.6;">
         <p>Hello <strong>${client.name || ""}</strong>,</p>
-        <p>This is to confirm that your stored item has been successfully <strong>withdrawn</strong>.</p>
+        <p>Your storage receipt has been created successfully.</p>
 
-        <div style="background-color: #fff8f0; padding: 16px; margin: 20px 0; border: 1px solid #f2d6b3; border-radius: 6px;">
+        <div style="background-color: #f0f9ff; padding: 16px; margin: 20px 0; border: 1px solid #b6e0fe; border-radius: 6px;">
           <p style="margin: 0; font-size: 15px;">
-            <strong>Tracking ID:</strong> ${updatedReceipt.trackingId}<br>
-            <strong>Withdrawal Date:</strong> ${new Date(updatedReceipt.withdrawalDate).toLocaleString("en-KE")}<br>
-            <strong>Status:</strong> ${updatedReceipt.status}
+            <strong>Tracking ID:</strong> ${trackingId}<br>
+            <strong>Status:</strong> Deposited<br>
+            <strong>Deposit Date:</strong> ${new Date().toLocaleString("en-KE")}
           </p>
         </div>
 
-        <p>If you have any questions or concerns about your withdrawal, please don’t hesitate to contact us.</p>
+        <p>You can use the above tracking ID to monitor your receipt on our website.</p>
 
         <p style="margin-bottom: 0;">Thank you,<br><strong>Gordon Security Team</strong></p>
       </div>
