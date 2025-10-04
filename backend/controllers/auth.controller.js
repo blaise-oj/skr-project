@@ -17,23 +17,63 @@ brevo.setApiKey(
 // HTML templates
 const emailTemplates = {
   verification: (verifyUrl) => `
-    <div style="font-family:sans-serif; text-align:center;">
-      <h2>Verify Your Email - Gordon Security</h2>
-      <p>Click below to verify your email:</p>
-      <a href="${verifyUrl}" style="display:inline-block; padding:10px 20px; background:#007bff; color:white; border-radius:5px; text-decoration:none;">Verify Email</a>
-      <p>If you didn't request this, ignore this email.</p>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+      
+      <!-- Header -->
+      <div style="background-color: #0a2e5c; color: #ffffff; padding: 16px; text-align: center;">
+        <h2 style="margin: 0;">Gordon Security</h2>
+      </div>
+      
+      <!-- Body -->
+      <div style="padding: 24px; color: #333333; font-size: 15px; line-height: 1.6; text-align: center;">
+        <h3 style="margin-top: 0;">Verify Your Email Address</h3>
+        <p>Thank you for signing up with <strong>Gordon Security</strong>.<br>
+        To complete your registration, please verify your email by clicking the button below:</p>
+        
+        <a href="${verifyUrl}" 
+           style="display: inline-block; margin: 20px 0; padding: 12px 24px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">
+           Verify Email
+        </a>
+        
+        <p style="color: #666; font-size: 14px;">If you didn’t request this verification, you can safely ignore this email.</p>
+      </div>
+      
+      <!-- Footer -->
+      <div style="background-color: #f4f4f4; padding: 12px; text-align: center; font-size: 12px; color: #888;">
+        © ${new Date().getFullYear()} Gordon Security. All rights reserved.
+      </div>
     </div>
   `,
   passwordReset: (resetUrl) => `
-    <div style="font-family:sans-serif; text-align:center;">
-      <h2>Password Reset Request</h2>
-      <p>You requested to reset your password. Click below to continue:</p>
-      <a href="${resetUrl}" style="display:inline-block; padding:10px 20px; background:#007bff; color:white; border-radius:5px; text-decoration:none;">Reset Password</a>
-      <p>This link expires in 24 hours. If you didn't request this, ignore this email.</p>
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+    
+    <!-- Header -->
+    <div style="background-color: #0a2e5c; color: #ffffff; padding: 16px; text-align: center;">
+      <h2 style="margin: 0;">Gordon Security</h2>
     </div>
-  `
+    
+    <!-- Body -->
+    <div style="padding: 24px; color: #333333; font-size: 15px; line-height: 1.6; text-align: center;">
+      <h3 style="margin-top: 0;">Password Reset Request</h3>
+      <p>We received a request to reset your account password.<br>
+      If this was you, please click the button below to set a new password:</p>
+      
+      <a href="${resetUrl}" 
+         style="display: inline-block; margin: 20px 0; padding: 12px 24px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">
+         Reset Password
+      </a>
+      
+      <p style="color: #666; font-size: 14px;">This link will expire in <strong>24 hours</strong> for security reasons.<br>
+      If you did not request this, you can safely ignore this email.</p>
+    </div>
+    
+    <!-- Footer -->
+    <div style="background-color: #f4f4f4; padding: 12px; text-align: center; font-size: 12px; color: #888;">
+      © ${new Date().getFullYear()} Gordon Security. All rights reserved.
+    </div>
+  </div>
+`,
 };
-
 // Send email via Brevo
 const sendEmail = async (to, subject, html) => {
   try {
@@ -102,11 +142,27 @@ export const verifyEmail = async (req, res) => {
     await user.save();
 
     return res.send(`
-      <div style="text-align:center; font-family:sans-serif;">
-        <h2>✅ Email verified successfully!</h2>
-        <p>You can now <a href="${process.env.FRONTEND_URL}/login.html">log in</a>.</p>
-      </div>
-    `);
+  <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:#f4f6f9; font-family:Arial, sans-serif;">
+    <div style="background:#fff; padding:40px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); max-width:420px; width:100%; text-align:center;">
+      
+      <div style="font-size:50px; color:#28a745; margin-bottom:15px;">✅</div>
+      
+      <h2 style="color:#333; margin-bottom:10px;">Email Verified Successfully</h2>
+      <p style="color:#555; font-size:15px; margin-bottom:25px;">
+        Your email has been successfully verified. You can now access your account and enjoy our services.
+      </p>
+      
+      <a href="${process.env.FRONTEND_URL}/login.html" 
+         style="display:inline-block; padding:12px 24px; background:#007bff; color:#fff; font-size:16px; font-weight:bold; text-decoration:none; border-radius:6px; transition:background 0.3s;">
+         Log In
+      </a>
+      
+      <p style="margin-top:25px; font-size:13px; color:#888;">
+        © ${new Date().getFullYear()} Gordon Security. All rights reserved.
+      </p>
+    </div>
+  </div>
+`);
   } catch (err) {
     console.error("Verification error:", err);
     return res.send(`<h2>Error verifying email</h2>`);
@@ -127,7 +183,7 @@ export const loginUser = async (req, res) => {
     }
 
     if (!user.isVerified) {
-      return res.status(403).json({ message: "Verify your email before logging in." });
+      return res.status(403).json({ message: "We have sent you an email, please verify its you before logging in." });
     }
 
     const token = jwt.sign({ id: user._id, username: user.username, email: user.email, isAdmin: false }, SECRET, { expiresIn: "1d" });

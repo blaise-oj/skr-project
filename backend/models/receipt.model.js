@@ -35,7 +35,7 @@ const receiptSchema = mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      match: /^[A-Z0-9]{8}$/,
+      match: /^GSC[A-Z0-9]{12}-CARGO$/,  // ✅ New format
     },
 
     withdrawalDate: Date,
@@ -47,7 +47,6 @@ const receiptSchema = mongoose.Schema(
       identification: String,
     },
 
-    // This line correctly tracks who created the receipt with a reference to the Admin model
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Admin",

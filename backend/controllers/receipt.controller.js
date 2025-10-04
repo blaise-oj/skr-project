@@ -40,8 +40,15 @@ const sendBrevoEmail = async (to, subject, html) => {
 };
 
 // --- Generate unique tracking ID ---
-const generateTrackingId = () =>
-  crypto.randomBytes(4).toString("hex").toUpperCase(); // 8 chars
+const generateTrackingId = () => {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let randomPart = "";
+  for (let i = 0; i < 12; i++) {
+    randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `GSC${randomPart}-CARGO`;
+};
+
 
 // --- Get all receipts (admin) ---
 const getReceipts = async (req, res) => {
@@ -90,17 +97,44 @@ const createReceipt = async (req, res) => {
       return res.status(400).json({ message: "Client phone is required" });
 
     // --- Send notification ---
-    if (notifyType === "email") {
-      await sendBrevoEmail(
-        client.email,
-        "Your Storage Receipt Tracking Code",
-        `<p>Hello ${client.name || ""},</p>
-         <p>Your storage receipt has been created.</p>
-         <p><strong>Tracking ID:</strong> ${trackingId}</p>
-         <p>You can use this code to track your receipt on our website.</p>
-         <p>Thank you,<br>Gordon Security</p>`
-      );
-    } else if (notifyType === "sms") {
+    if (notificationMethod === "email") {
+  await sendBrevoEmail(
+    client.email,
+    "Your Item Has Been Withdrawn",
+    `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+      <!-- Header -->
+      <div style="background-color: #0a2e5c; color: #ffffff; padding: 16px; text-align: center;">
+        <h2 style="margin: 0;">Gordon Security</h2>
+      </div>
+
+      <!-- Body -->
+      <div style="padding: 24px; color: #333333; font-size: 15px; line-height: 1.6;">
+        <p>Hello <strong>${client.name || ""}</strong>,</p>
+        <p>This is to confirm that your stored item has been successfully <strong>withdrawn</strong>.</p>
+
+        <div style="background-color: #fff8f0; padding: 16px; margin: 20px 0; border: 1px solid #f2d6b3; border-radius: 6px;">
+          <p style="margin: 0; font-size: 15px;">
+            <strong>Tracking ID:</strong> ${updatedReceipt.trackingId}<br>
+            <strong>Withdrawal Date:</strong> ${new Date(updatedReceipt.withdrawalDate).toLocaleString("en-KE")}<br>
+            <strong>Status:</strong> ${updatedReceipt.status}
+          </p>
+        </div>
+
+        <p>If you have any questions or concerns about your withdrawal, please don’t hesitate to contact us.</p>
+
+        <p style="margin-bottom: 0;">Thank you,<br><strong>Gordon Security Team</strong></p>
+      </div>
+
+      <!-- Footer -->
+      <div style="background-color: #f4f4f4; padding: 12px; text-align: center; font-size: 12px; color: #888;">
+        © ${new Date().getFullYear()} Gordon Security. All rights reserved.
+      </div>
+    </div>
+    `
+  );
+    } 
+    else if (notifyType === "sms") {
       let phone = client.phone.trim();
       if (phone.startsWith("0")) phone = "+254" + phone.slice(1);
       else if (phone.startsWith("254")) phone = "+" + phone;
@@ -166,17 +200,20 @@ export const generateReceiptPDF = async (req, res) => {
     const qrImageBytes = Buffer.from(qrImageUrl.split(",")[1], "base64");
 
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([600, 400]);
-    const { height } = page.getSize();
+    const page = pdfDoc.addPage([600, 550]); // Taller for table
+    const { height, width } = page.getSize();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    page.drawText("Gordon Security Company", {
-      x: 50,
+    // --- Header ---
+    page.drawText("GORDON SECURITY COMPANY", {
+      x: 180,
       y: height - 50,
       size: 18,
-      font,
-      color: rgb(0.2, 0.4, 0.7),
+      font: boldFont,
+      color: rgb(0.1, 0.3, 0.6),
     });
+
     page.drawText(`Receipt for Tracking ID: ${receiptData.trackingId}`, {
       x: 50,
       y: height - 80,
@@ -184,44 +221,105 @@ export const generateReceiptPDF = async (req, res) => {
       font,
     });
 
-    let y = height - 110;
-    const drawField = (label, value) => {
-      page.drawText(`${label}: ${value}`, { x: 50, y, size: 12, font });
-      y -= 20;
-    };
+    // --- Table Setup ---
+    let tableTop = height - 120;
+    let tableLeft = 50;
+    let tableRight = width - 50;
+    let rowHeight = 25;
+    let colLabelWidth = 150;
 
-    drawField("Tracking ID", receiptData.trackingId);
-    drawField("Item", receiptData.name);
-    drawField("Quantity", receiptData.quantity);
-    drawField("Weight", `${receiptData.weight} kg`);
-    drawField("Stored By", receiptData.client?.name || "N/A");
-    drawField("Phone", receiptData.client?.phone || "N/A");
-    drawField("Email", receiptData.client?.email || "N/A");
-    drawField("Status", receiptData.status);
-    drawField(
-      "Deposit Date",
-      new Date(receiptData.depositDate).toLocaleString("en-KE")
-    );
-    if (receiptData.withdrawalDate)
-      drawField(
+    // Fields
+    const rows = [
+      ["Tracking ID", receiptData.trackingId],
+      ["Item Name", receiptData.name],
+      ["Quantity", receiptData.quantity],
+      ["Weight", `${receiptData.weight} kg`],
+      ["Client Name", receiptData.client?.name || "N/A"],
+      ["Phone", receiptData.client?.phone || "N/A"],
+      ["Email", receiptData.client?.email || "N/A"],
+      ["Status", receiptData.status],
+      ["Deposit Date", new Date(receiptData.depositDate).toLocaleString("en-KE")],
+    ];
+
+    if (receiptData.withdrawalDate) {
+      rows.push([
         "Withdrawal Date",
-        new Date(receiptData.withdrawalDate).toLocaleString("en-KE")
-      );
+        new Date(receiptData.withdrawalDate).toLocaleString("en-KE"),
+      ]);
+    }
 
+    // Draw table border
+    page.drawRectangle({
+      x: tableLeft,
+      y: tableTop - rowHeight * rows.length,
+      width: tableRight - tableLeft,
+      height: rowHeight * rows.length,
+      borderColor: rgb(0.6, 0.6, 0.6),
+      borderWidth: 1,
+    });
+
+    // Draw rows
+    let y = tableTop;
+    rows.forEach(([label, value], index) => {
+      // Row line
+      page.drawLine({
+        start: { x: tableLeft, y: y - rowHeight },
+        end: { x: tableRight, y: y - rowHeight },
+        thickness: 0.5,
+        color: rgb(0.8, 0.8, 0.8),
+      });
+
+      // Vertical separator
+      page.drawLine({
+        start: { x: tableLeft + colLabelWidth, y },
+        end: { x: tableLeft + colLabelWidth, y: y - rowHeight },
+        thickness: 0.5,
+        color: rgb(0.8, 0.8, 0.8),
+      });
+
+      // Label
+      page.drawText(label, {
+        x: tableLeft + 10,
+        y: y - 17,
+        size: 11,
+        font: boldFont,
+      });
+
+      // Value
+      page.drawText(String(value), {
+        x: tableLeft + colLabelWidth + 10,
+        y: y - 17,
+        size: 11,
+        font,
+      });
+
+      y -= rowHeight;
+    });
+
+    // --- QR Code ---
     const qrImage = await pdfDoc.embedPng(qrImageBytes);
-    const qrDims = qrImage.scale(0.5);
+    const qrDims = qrImage.scale(0.6);
     page.drawImage(qrImage, {
-      x: 400,
-      y: 100,
+      x: width - qrDims.width - 70,
+      y: 80,
       width: qrDims.width,
       height: qrDims.height,
+    });
+
+    // --- Footer ---
+    page.drawText("© Gordon Security - All Rights Reserved", {
+      x: 50,
+      y: 40,
+      size: 10,
+      font,
+      color: rgb(0.4, 0.4, 0.4),
     });
 
     const pdfBytes = await pdfDoc.save();
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=receipt.pdf"
+      `attachment; filename=receipt_${receiptData.trackingId}.pdf`
     );
     res.send(Buffer.from(pdfBytes));
   } catch (error) {
@@ -230,16 +328,28 @@ export const generateReceiptPDF = async (req, res) => {
   }
 };
 
+
 // --- Generate QR code ---
 export const generateQRCode = async (req, res) => {
   try {
     const { trackingId } = req.params;
-    const qr = await QRCode.toDataURL(trackingId);
-    res.status(200).json({ qrCode: qr });
+
+    // Build tracking URL (✅ update FRONTEND_URL in .env)
+    const trackingUrl = `${process.env.FRONTEND_URL}/track/${trackingId}`;
+
+    // Generate QR code with the full URL
+    const qr = await QRCode.toDataURL(trackingUrl);
+
+    res.status(200).json({ 
+      qrCode: qr, 
+      trackingUrl // send back the URL as well for debugging/frontend use
+    });
   } catch (error) {
+    console.error("❌ QR Code generation error:", error);
     res.status(500).json({ message: "QR generation failed" });
   }
 };
+
 
 // --- Mark receipt as withdrawn ---
 const markAsWithdrawn = async (req, res) => {
