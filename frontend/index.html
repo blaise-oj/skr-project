@@ -192,14 +192,14 @@
         <div id="receiptResult"></div>
 
         <script>
-            //async function searchReceipt() {
-               // const token = localStorage.getItem("userToken");
-               // const email = localStorage.getItem("email");
+            async function searchReceipt() {
+                const token = localStorage.getItem("userToken");
+                const email = localStorage.getItem("email");
 
-               // if (!token || !email) {
-               //     alert("Please log in to input the tracking code.");
-               //     return;
-               // }
+                if (!token || !email) {
+                    alert("Please log in to input the tracking code.");
+                    return;
+                }
 
 
                 const trackingId = document.getElementById("trackingIdInput").value.trim();
@@ -272,7 +272,7 @@
                         timeStyle: "short",
                     });
                 }
-            //}
+            }
         </script>
 
 
