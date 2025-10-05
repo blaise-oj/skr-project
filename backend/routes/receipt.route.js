@@ -22,7 +22,7 @@ const router = express.Router();
 router.get("/", getReceipts);
 
 //this is before "/:id" to avoid conflicts with the ID route
-router.get("/track/:trackingId", searchByTrackingId);
+router.get("/track/:trackingId", verifyToken, searchByTrackingId);
 router.get("/track/:trackingId/qrcode", generateQRCode);
 router.get("/:trackingId/pdf", generateReceiptPDF);
 
