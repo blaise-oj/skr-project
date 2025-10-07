@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext.jsx';
 import Navbar from './components/Navbar/Navbar';
-import Sidebar from './components/sidebar/sidebar.jsx';
+import Sidebar from './components/sidebar/sidebar';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Add from './pages/Add/Add';
 import List from './pages/List/List';
@@ -11,7 +11,7 @@ import Edit from './pages/Edit/Edit';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import './App.css';
-import ProtectedRoute from './routes/protectedRoute.jsx';
+import ProtectedRoute from './routes/ProtectedRoute.jsx';
 import Messages from './pages/Messages/Messages.jsx';
 import Comments from './pages/Comments/Comments.jsx';
 
