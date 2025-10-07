@@ -1,5 +1,4 @@
 import express from "express";
-import receipt from "../models/receipt.model.js";
 import {
   getReceipts,
   getReceipt,
@@ -21,9 +20,13 @@ const router = express.Router();
 // Route only for admin to get all receipts
 router.get("/", getReceipts);
 
-//this is before "/:id" to avoid conflicts with the ID route
-router.get("/track/:trackingId", verifyToken, searchByTrackingId);
+// ✅ Public route: anyone can track a receipt
+router.get("/track/:trackingId", searchByTrackingId);
+
+// ✅ Public QR Code route
 router.get("/track/:trackingId/qrcode", generateQRCode);
+
+// ✅ Public PDF download route
 router.get("/:trackingId/pdf", generateReceiptPDF);
 
 // General routes

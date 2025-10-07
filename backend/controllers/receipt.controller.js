@@ -170,23 +170,22 @@ const createReceipt = async (req, res) => {
 const searchByTrackingId = async (req, res) => {
   try {
     const { trackingId } = req.params;
-    const userEmail = req.user?.email;
-    const isAdmin = req.user?.isAdmin;
 
+    // Find the receipt directly by tracking ID
     const foundReceipt = await receipt.findOne({ trackingId });
-    if (!foundReceipt)
+
+    if (!foundReceipt) {
       return res.status(404).json({ message: "Receipt not found" });
+    }
 
-    if (!isAdmin && foundReceipt.client?.email !== userEmail)
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to view this receipt." });
-
+    // Return full details — no login, no restrictions
     res.status(200).json(foundReceipt);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("❌ Error searching receipt:", error);
+    res.status(500).json({ message: "An error occurred while fetching receipt." });
   }
 };
+
 
 // --- Generate receipt PDF ---
 export const generateReceiptPDF = async (req, res) => {

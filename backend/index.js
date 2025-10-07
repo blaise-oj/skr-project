@@ -19,6 +19,7 @@ const port = process.env.PORT || 4000;
 // CORS configuration
 const allowedOrigins = [
   "http://127.0.0.1:5500",                    // For HTML frontend running locally
+  "http://localhost:5500",
   "http://localhost:5173",                   // For React frontend running locally (Vite)
   "https://skr-project-frontend.onrender.com", // Public user site
   "https://skr-project-admin.onrender.com",    // Admin panel
