@@ -98,10 +98,10 @@ const createReceipt = async (req, res) => {
 
     // --- Send notification ---
     if (notifyType === "email") {
-  await sendBrevoEmail(
-    client.email,
-    "Your Storage Receipt Tracking Code",
-    `
+      await sendBrevoEmail(
+        client.email,
+        "Your Storage Receipt Tracking Code",
+        `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
       <!-- Header -->
       <div style="background-color: #0a2e5c; color: #ffffff; padding: 16px; text-align: center;">
@@ -132,8 +132,8 @@ const createReceipt = async (req, res) => {
       </div>
     </div>
     `
-  );
-    } 
+      );
+    }
     else if (notifyType === "sms") {
       let phone = client.phone.trim();
       if (phone.startsWith("0")) phone = "+254" + phone.slice(1);
@@ -143,9 +143,8 @@ const createReceipt = async (req, res) => {
           .status(400)
           .json({ message: "Invalid phone number format" });
 
-      const message = `Hello ${
-        client.name || ""
-      }, your storage receipt has been created.\nTracking ID: ${trackingId}\n- Gordon Security`;
+      const message = `Hello ${client.name || ""
+        }, your storage receipt has been created.\nTracking ID: ${trackingId}\n- Gordon Security`;
 
       const smsResponse = await sms.send({
         to: [phone],
@@ -195,8 +194,11 @@ export const generateReceiptPDF = async (req, res) => {
     if (!receiptData)
       return res.status(404).json({ message: "Receipt not found" });
 
-    const qrImageUrl = await QRCode.toDataURL(receiptData.trackingId);
+    // --- QR Code pointing to frontend receipt page ---
+    const trackingUrl = `${process.env.FRONTEND_URL}/receipt/${receiptData.trackingId}`;
+    const qrImageUrl = await QRCode.toDataURL(trackingUrl);
     const qrImageBytes = Buffer.from(qrImageUrl.split(",")[1], "base64");
+
 
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([600, 550]); // Taller for table
@@ -339,8 +341,8 @@ export const generateQRCode = async (req, res) => {
     // Generate QR code with the full URL
     const qr = await QRCode.toDataURL(trackingUrl);
 
-    res.status(200).json({ 
-      qrCode: qr, 
+    res.status(200).json({
+      qrCode: qr,
       trackingUrl // send back the URL as well for debugging/frontend use
     });
   } catch (error) {
@@ -375,12 +377,11 @@ const markAsWithdrawn = async (req, res) => {
         client.email,
         "Your Item Has Been Withdrawn",
         `<p>Hello ${client.name || ""},</p>
-         <p>Your item with tracking ID <strong>${
-           updatedReceipt.trackingId
-         }</strong> has been withdrawn.</p>
+         <p>Your item with tracking ID <strong>${updatedReceipt.trackingId
+        }</strong> has been withdrawn.</p>
          <p>Withdrawal Date: ${new Date(
-           updatedReceipt.withdrawalDate
-         ).toLocaleString("en-KE")}</p>
+          updatedReceipt.withdrawalDate
+        ).toLocaleString("en-KE")}</p>
          <p>Status: <strong>${updatedReceipt.status}</strong></p>
          <p>Thank you,<br>Gordon Security</p>`
       );
@@ -391,11 +392,9 @@ const markAsWithdrawn = async (req, res) => {
       else if (!phone.startsWith("+254"))
         return res.status(400).json({ message: "Invalid phone number" });
 
-      const message = `Hello ${
-        client.name || ""
-      }, your item with tracking ID ${
-        updatedReceipt.trackingId
-      } has been withdrawn. - Gordon Security`;
+      const message = `Hello ${client.name || ""
+        }, your item with tracking ID ${updatedReceipt.trackingId
+        } has been withdrawn. - Gordon Security`;
 
       const smsResponse = await sms.send({
         to: [phone],
