@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, Legend } from "recharts";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+  Legend
+} from "recharts";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -26,7 +37,9 @@ const Dashboard = () => {
       setStats({ total, active, withdrawn, clients });
 
       // Recent receipts
-      const sortedReceipts = receipts.sort((a, b) => new Date(b.depositDate) - new Date(a.depositDate));
+      const sortedReceipts = receipts.sort(
+        (a, b) => new Date(b.depositDate) - new Date(a.depositDate)
+      );
       setRecentReceipts(sortedReceipts.slice(0, 5));
 
       // Chart data by day (last 7 days)
@@ -35,9 +48,9 @@ const Dashboard = () => {
       for (let i = 6; i >= 0; i--) {
         const day = new Date(today);
         day.setDate(today.getDate() - i);
-        const dayStr = day.toLocaleDateString("en-GB"); // dd/mm/yyyy
-        const dayReceipts = receipts.filter(r =>
-          new Date(r.depositDate).toDateString() === day.toDateString()
+        const dayStr = day.toLocaleDateString("en-GB");
+        const dayReceipts = receipts.filter(
+          r => new Date(r.depositDate).toDateString() === day.toDateString()
         );
         chartArray.push({
           date: dayStr,
@@ -98,34 +111,38 @@ const Dashboard = () => {
       <div className="charts">
         <div className="chart">
           <h3>Receipts Over Last 7 Days</h3>
-          <BarChart width={400} height={250} data={chartData}>
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="Active" fill="#4caf50" />
-            <Bar dataKey="Withdrawn" fill="#f44336" />
-          </BarChart>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={chartData}>
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="Active" fill="#4caf50" />
+              <Bar dataKey="Withdrawn" fill="#f44336" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
         <div className="chart">
           <h3>Status Distribution</h3>
-          <PieChart width={300} height={250}>
-            <Pie
-              data={pieData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={80}
-              label
-            >
-              {pieData.map((entry, index) => (
-                <Cell key={index} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Legend />
-          </PieChart>
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                label
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
@@ -151,7 +168,12 @@ const Dashboard = () => {
                     {r.status}
                   </span>
                 </td>
-                <td>{new Date(r.depositDate).toLocaleString("en-KE", { dateStyle: "medium", timeStyle: "short" })}</td>
+                <td>
+                  {new Date(r.depositDate).toLocaleString("en-KE", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  })}
+                </td>
               </tr>
             ))}
           </tbody>
