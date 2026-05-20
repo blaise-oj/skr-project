@@ -131,11 +131,7 @@ const AddReceipt = () => {
                         required
                     />
                     <span className="unit-suffix">kgs</span>
-                </div>
-
-
-                <label>Image URL (optional)</label>
-                <input type="text" name="image" value={formData.image} onChange={handleChange} />
+                </div>                
 
                 <hr />
                 <label>Client Name</label>
@@ -147,7 +143,7 @@ const AddReceipt = () => {
                 <label>Client Email</label>
                 <input type="email" name="clientEmail" value={formData.clientEmail} onChange={handleChange} required />
 
-                <label>Identification (optional)</label>
+                <label>Identification Number (optional)</label>
                 <input type="text" name="identification" value={formData.identification} onChange={handleChange} />
 
                 <button type="submit" disabled={loading}>

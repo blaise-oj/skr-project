@@ -3,36 +3,111 @@
     min-height: 100vh;
     border: 1.5px solid #a9a9a9;
     border-top: 0;
+    background: #fff;
 }
+
 .sidebar-options{
-    padding-top:50px ;
+    padding-top: 50px;
     padding-left: 20%;
     display: flex;
     flex-direction: column;
     gap: 20px;
-
 }
+
 .sidebar-option {
     display: flex;
     align-items: center;
     gap: 12px;
     border: 1px solid #a9a9a9;
     border-right: 0;
-    padding: 8px 10px;
-    border-radius: 3px 0px 0px 3px;
+    padding: 10px 12px;
+    border-radius: 8px 0px 0px 8px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    text-decoration: none;
 }
+
+.sidebar-option:hover{
+    background: #f5f5f5;
+}
+
 .sidebar-option img {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     object-fit: contain;
 }
-@media (max-width : 900px){
-    .sidebar-option p{
+
+.sidebar-option p{
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+}
+
+/* ACTIVE LINK */
+.sidebar-option.active {
+    background-color: #fff4f2;
+    border-color: tomato;
+}
+
+.sidebar-option.active p{
+    color: tomato;
+    font-weight: 600;
+}
+
+/* MOBILE */
+@media (max-width: 900px){
+
+    .sidebar{
+        width: 95px;
+    }
+
+    .sidebar-options{
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-top: 20px;
+        gap: 12px;
+    }
+
+    .sidebar-option{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+
+        padding: 12px 8px;
+        border-radius: 12px;
+
+        border-right: 1px solid #a9a9a9;
+
+        min-height: 70px;
+
+        overflow: hidden;
+    }
+
+    /* HIDE ICONS */
+    .sidebar-option img{
         display: none;
     }
-}
-.sidebar-option .active {
-    background-color: white;
-    border-color: tomato;
+
+    /* PERFECT TEXT ALIGNMENT */
+    .sidebar-option p{
+        display: block;
+
+        width: 100%;
+
+        font-size: 11px;
+        font-weight: 600;
+
+        line-height: 1.3;
+
+        margin: 0;
+
+        text-align: center;
+
+        white-space: normal;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
 }
