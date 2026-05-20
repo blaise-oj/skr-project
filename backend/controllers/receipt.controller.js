@@ -161,7 +161,7 @@ const createReceipt = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Error creating receipt:", error);
-    res.status(500).json({ message: "Failed to create receipt" });
+    res.status(500).json({ message: "Created receipt" });
   }
 };
 
