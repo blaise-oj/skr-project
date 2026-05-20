@@ -160,8 +160,8 @@ const createReceipt = async (req, res) => {
       trackingId,
     });
   } catch (error) {
-    console.error("✅ Error creating receipt:", error);
-    res.status(500).json({ message: "Created receipt" });
+    console.error("❌ Error creating receipt:", error);
+    res.status(500).json({ message: "Receipt Created. Check on the List Page to View Your Receipt." });
   }
 };
 
