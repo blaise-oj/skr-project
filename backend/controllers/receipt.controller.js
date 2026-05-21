@@ -43,10 +43,10 @@ const sendBrevoEmail = async (to, subject, html) => {
 const generateTrackingId = () => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let randomPart = "";
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 12; i++) {
     randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return `GSC${randomPart}`;
+  return `GSC${randomPart}-CARGO`;
 };
 
 
