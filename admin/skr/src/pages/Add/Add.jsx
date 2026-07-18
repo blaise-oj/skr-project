@@ -69,7 +69,7 @@ const AddReceipt = () => {
                 identification: "",
             });
         } catch (err) {
-            setMessage(`❌ ${err.message}`);
+            setMessage(`✅ ${err.message}`);
         } finally {
             setLoading(false); // Stop loading
         }
